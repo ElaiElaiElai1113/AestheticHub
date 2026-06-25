@@ -2,6 +2,14 @@
 
 Public practitioner directory built for the EQUALS3 AI-Leveraged Full-Stack Developer test.
 
+## Submission Checklist
+
+- **How to run it:** see [How To Run](#how-to-run).
+- **Short progress report:** see [Progress Report](#progress-report), including what I built, what I left out, and what I would do next.
+- **Direct brief critique:** see [Where The Brief Was Unclear](#where-the-brief-was-unclear), including what was underspecified and what I would change about the spec or approach.
+- **Optional AI note:** see [Optional AI Note](#optional-ai-note).
+- **Working code:** Next.js, React, and TypeScript implementation with typed seed data, public directory UI, search, filters, Premium treatment, and local shortlist behavior.
+
 ## Brief Coverage
 
 This project implements the public directory slice for the Aesthetic Training Hub:
