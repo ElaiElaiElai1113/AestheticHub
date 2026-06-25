@@ -1,9 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { PractitionerCard } from "@/app/components/practitioner-card";
 import {
-  rankPractitionersForSpecialism,
+  allSpecialisms,
+  filterAndRankPractitioners,
+  getSelectableSpecialism,
+} from "@/app/data/practitioner-search";
+import {
   type Practitioner,
 } from "@/app/data/practitioners";
 
@@ -12,34 +17,42 @@ type PractitionerDirectoryProps = {
   specialisms: string[];
 };
 
-const allSpecialisms = "All";
-
 export function PractitionerDirectory({
   practitioners,
   specialisms,
 }: PractitionerDirectoryProps) {
-  const [selectedSpecialism, setSelectedSpecialism] = useState(allSpecialisms);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const selectedSpecialism = getSelectableSpecialism(
+    searchParams.get("specialism"),
+    specialisms,
+  );
 
   const selectedSpecialismForRanking =
     selectedSpecialism === allSpecialisms ? null : selectedSpecialism;
 
   const filteredPractitioners = useMemo(() => {
-    if (selectedSpecialism === allSpecialisms) {
-      return rankPractitionersForSpecialism(practitioners, null);
-    }
-
-    return rankPractitionersForSpecialism(
-      practitioners.filter((practitioner) =>
-        practitioner.specialisms.includes(selectedSpecialism),
-      ),
-      selectedSpecialism,
-    );
+    return filterAndRankPractitioners(practitioners, selectedSpecialism);
   }, [practitioners, selectedSpecialism]);
 
   const resultLabel =
     filteredPractitioners.length === 1
       ? "1 trainer"
       : `${filteredPractitioners.length} trainers`;
+
+  function updateSelectedSpecialism(nextSpecialism: string) {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (nextSpecialism === allSpecialisms) {
+      params.delete("specialism");
+    } else {
+      params.set("specialism", nextSpecialism);
+    }
+
+    const queryString = params.toString();
+    window.history.pushState(null, "", queryString ? `${pathname}?${queryString}` : pathname);
+  }
 
   return (
     <section aria-labelledby="directory-heading" className="mt-10">
@@ -65,7 +78,14 @@ export function PractitionerDirectory({
             </p>
           </div>
 
-          <div aria-label="Filter by specialism" className="flex flex-wrap gap-2">
+          <div
+            aria-labelledby="specialism-filter-heading"
+            className="flex flex-wrap gap-2"
+            role="group"
+          >
+            <h3 className="sr-only" id="specialism-filter-heading">
+              Filter trainers by specialism
+            </h3>
             {[allSpecialisms, ...specialisms].map((specialism) => {
               const isSelected = selectedSpecialism === specialism;
 
@@ -79,7 +99,7 @@ export function PractitionerDirectory({
                       : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
                   ].join(" ")}
                   key={specialism}
-                  onClick={() => setSelectedSpecialism(specialism)}
+                  onClick={() => updateSelectedSpecialism(specialism)}
                   type="button"
                 >
                   {specialism}
@@ -89,7 +109,10 @@ export function PractitionerDirectory({
           </div>
         </div>
 
-        <div className="mt-5 grid gap-4 border-t border-slate-100 pt-4 text-sm text-slate-600 lg:grid-cols-[1fr_auto] lg:items-start">
+        <div
+          className="mt-5 grid gap-4 border-t border-slate-100 pt-4 text-sm text-slate-600 lg:grid-cols-[1fr_auto] lg:items-start"
+          id="directory-results-summary"
+        >
           <div className="space-y-2">
             <p>
               Showing{" "}
@@ -109,7 +132,7 @@ export function PractitionerDirectory({
           <button
             className="w-fit rounded-full border border-slate-200 px-4 py-2 font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
             disabled={selectedSpecialism === allSpecialisms}
-            onClick={() => setSelectedSpecialism(allSpecialisms)}
+            onClick={() => updateSelectedSpecialism(allSpecialisms)}
             type="button"
           >
             Reset filter
@@ -118,7 +141,10 @@ export function PractitionerDirectory({
       </div>
 
       {filteredPractitioners.length > 0 ? (
-        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div
+          aria-describedby="directory-results-summary"
+          className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3"
+        >
           {filteredPractitioners.map((practitioner) => (
             <PractitionerCard
               key={practitioner.id}
@@ -142,7 +168,7 @@ export function PractitionerDirectory({
           </p>
           <button
             className="mt-5 rounded-full bg-slate-950 px-5 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-            onClick={() => setSelectedSpecialism(allSpecialisms)}
+            onClick={() => updateSelectedSpecialism(allSpecialisms)}
             type="button"
           >
             Show all trainers

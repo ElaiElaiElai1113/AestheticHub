@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { PractitionerDirectory } from "@/app/components/practitioner-directory";
 import { practitionersByTier, specialisms } from "@/app/data/practitioners";
 
@@ -7,7 +8,7 @@ export default function Home() {
   ).length;
 
   return (
-    <main className="min-h-screen bg-[#f6f3ee] text-slate-950">
+    <main className="min-h-screen bg-[#f6f3ee] text-slate-950" id="main-content">
       <section className="mx-auto flex w-full max-w-7xl flex-col px-5 py-8 sm:px-8 lg:px-10 lg:py-12">
         <header className="flex flex-col gap-8 rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-sm backdrop-blur md:p-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
@@ -40,10 +41,12 @@ export default function Home() {
           </div>
         </header>
 
-        <PractitionerDirectory
-          practitioners={practitionersByTier}
-          specialisms={specialisms}
-        />
+        <Suspense fallback={null}>
+          <PractitionerDirectory
+            practitioners={practitionersByTier}
+            specialisms={specialisms}
+          />
+        </Suspense>
       </section>
     </main>
   );

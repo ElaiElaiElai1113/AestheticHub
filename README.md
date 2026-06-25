@@ -15,6 +15,20 @@ This project implements the public directory slice for the Aesthetic Training Hu
 
 The implementation intentionally stays small because the brief asked for a clean, working slice rather than a larger unfinished product.
 
+## Screenshots
+
+### Directory
+
+![Desktop view of the public practitioner directory](docs/screenshots/directory-desktop.png)
+
+### Filtered Results
+
+![Filtered directory showing Laser and IPL trainers](docs/screenshots/directory-filtered.png)
+
+### Mobile Layout
+
+![Mobile view of the practitioner directory](docs/screenshots/directory-mobile.png)
+
 ## Tech Stack
 
 - Next.js 16
@@ -43,6 +57,7 @@ Run local verification:
 
 ```bash
 npm run lint
+npm test
 npm run build
 ```
 
@@ -59,10 +74,24 @@ The app expects Node `24.x`, pinned in `package.json`.
 Checked locally:
 
 - `npm run lint`
+- `npm test`
 - `npm run build`
 - Browser smoke test of the directory, specialism filters, reset state, tier ordering, and mobile layout
+- Playwright screenshot pass for desktop, filtered results, and mobile layouts
 
-There is no separate automated test suite in this half-day slice.
+The automated tests cover the ranking, filtering, invalid URL parameter fallback, and empty-result behaviour.
+
+## Design Decisions
+
+Premium trainers are listed first and have stronger visual treatment because the paid tier needs a visible commercial benefit. I also added a ranking note in the UI because paid placement affects student trust and should not be hidden.
+
+Filtering is by specialism because that is likely to be a stronger student intent signal than location at this stage. A student usually knows the treatment area they want to learn before they decide how far they are willing to travel.
+
+The selected specialism is synced to the URL, for example `/?specialism=Laser%20and%20IPL`, so filtered directory states can be shared and reviewed directly.
+
+The cards include extra decision-support fields such as best-fit audience, format, trust signals, and cohort timing. These are still seed-data fields, but they show the kind of information a real marketplace would need to help students compare trainers.
+
+The data stays in a typed in-memory dataset because persistence, onboarding, subscription checks, and approval workflows would be outside the intended half-day slice.
 
 ## Progress Report
 
@@ -76,7 +105,11 @@ Built:
 - A transparent ranking note explaining Premium placement and relevance sorting.
 - Responsive card grid with result counts and a resettable empty state.
 - Empty-state handling when no trainers match the selected specialism.
-- Basic metadata and a polished marketplace-style UI.
+- Shareable URL state for selected specialism filters.
+- Lightweight automated tests for ranking and filtering behaviour.
+- Accessibility polish including a skip link, labelled filter group, and keyboard-visible controls.
+- README screenshots generated with Playwright.
+- Basic Open Graph/Twitter metadata and a polished marketplace-style UI.
 
 Left out:
 
@@ -95,7 +128,7 @@ What I would do next:
 - Add a richer relevance model once there is real student behaviour data.
 - Add search across trainer names, locations, specialisms, and course descriptions.
 - Add analytics for filter usage and profile click-through so the marketplace can learn what students need.
-- Add automated tests around filtering, ranking, and empty-state behaviour.
+- Add component-level interaction tests and a small Playwright smoke test script for CI.
 
 ## Where The Brief Was Unclear
 
