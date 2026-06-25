@@ -2,36 +2,67 @@
 
 Public practitioner directory built for the EQUALS3 AI-Leveraged Full-Stack Developer test.
 
+## Brief Coverage
+
+This project implements the public directory slice for the Aesthetic Training Hub:
+
+- Lists aesthetics trainers with name, specialisms, location, and subscription tier.
+- Supports the two requested paid tiers: Standard and Premium.
+- Makes Premium trainers stand out through ordering, visual treatment, and richer card emphasis.
+- Lets students filter trainers by specialism.
+- Includes populated seed data using a typed in-memory dataset.
+- Uses Next.js, React, and TypeScript.
+
+The implementation intentionally stays small because the brief asked for a clean, working slice rather than a larger unfinished product.
+
+## Tech Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- Typed in-memory data
+
 ## How To Run
+
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Run the development server:
+
+```bash
 npm run dev
 ```
 
 Open `http://localhost:3000`.
 
-For a production check:
+Run local verification:
 
 ```bash
 npm run lint
 npm run build
+```
+
+Run the production build locally:
+
+```bash
 npm run start
 ```
 
-## Deploying To Vercel
+The app expects Node `24.x`, pinned in `package.json`.
 
-Use Vercel's Next.js framework preset.
+## Verification
 
-Recommended settings:
+Checked locally:
 
-- Root Directory: repository root
-- Install Command: `npm install`
-- Build Command: `npm run build`
-- Output Directory: leave empty / Vercel default
-- Node.js Version: `24.x`
+- `npm run lint`
+- `npm run build`
+- Browser smoke test of the directory, specialism filters, reset state, tier ordering, and mobile layout
 
-The Node version is pinned in `package.json` through `engines.node` so Vercel builds against the same major runtime expected by this Next.js version.
+There is no separate automated test suite in this half-day slice.
 
 ## Progress Report
 
@@ -44,6 +75,7 @@ Built:
 - Decision-support fields on each trainer card: best-fit audience, training format, trust signals, and cohort timing.
 - A transparent ranking note explaining Premium placement and relevance sorting.
 - Responsive card grid with result counts and a resettable empty state.
+- Empty-state handling when no trainers match the selected specialism.
 - Basic metadata and a polished marketplace-style UI.
 
 Left out:
@@ -63,6 +95,7 @@ What I would do next:
 - Add a richer relevance model once there is real student behaviour data.
 - Add search across trainer names, locations, specialisms, and course descriptions.
 - Add analytics for filter usage and profile click-through so the marketplace can learn what students need.
+- Add automated tests around filtering, ranking, and empty-state behaviour.
 
 ## Where The Brief Was Unclear
 
@@ -77,6 +110,10 @@ I added a visible ranking note in the interface because paid placement versus st
 The vetting model is central to trust but outside the brief. A real directory needs approval states, credential checks, insurance or qualification fields, and a way to remove or suspend listings.
 
 The student journey after discovery is not defined. The next action could be enquiry, course booking, trainer profile view, or comparison. That decision affects the card content, ranking, and conversion metrics.
+
+The data model is intentionally simplified. For a production marketplace I would want a clear distinction between trainer, training provider, course, location, cohort, subscription, and approval status. Combining those too early would make the directory harder to evolve.
+
+The brief asks for a public directory but does not define what success means. I would want one primary metric agreed upfront, such as profile click-through, enquiry starts, course bookings, or trainer subscription conversion. That would change the UI priorities.
 
 ## Optional AI Note
 
