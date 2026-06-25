@@ -26,7 +26,7 @@
 **Files:**
 - Modify: `app/page.tsx`
 
-- [ ] Replace the plain hero with a stronger split composition: left-side headline and right-side student search preview.
+- [ ] Replace the plain hero with stronger marketplace positioning and clearer stats.
 - [ ] Add a trust strip below the hero with four compact proof points: vetted trainers, CPD-aligned, UK-wide, and transparent Premium placement.
 - [ ] Keep the directory as the first real product surface after the hero/trust strip.
 

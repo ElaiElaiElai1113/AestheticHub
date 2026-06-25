@@ -86,7 +86,7 @@ The automated tests cover the ranking, filtering, invalid URL parameter fallback
 
 Premium trainers are listed first and have stronger visual treatment because the paid tier needs a visible commercial benefit. I also added a ranking note in the UI because paid placement affects student trust and should not be hidden.
 
-The visual direction is trust-first rather than decorative. The hero uses a student-search preview, the trust strip reinforces vetting and transparency, and the cards expose concrete decision signals before asking students to click further.
+The visual direction is trust-first rather than decorative. The hero sets clear marketplace positioning, the trust strip reinforces vetting and transparency, and the cards expose concrete decision signals before asking students to click further.
 
 Filtering is by specialism because that is likely to be a stronger student intent signal than location at this stage. A student usually knows the treatment area they want to learn before they decide how far they are willing to travel.
 
@@ -111,7 +111,7 @@ Built:
 - Shareable URL state for selected specialism filters.
 - Lightweight automated tests for ranking and filtering behaviour.
 - Accessibility polish including a skip link, labelled filter group, and keyboard-visible controls.
-- Trust-first UI polish: stronger hero, student brief preview, trust strip, icon-led metadata, and richer Premium card treatment.
+- Trust-first UI polish: stronger hero, trust strip, icon-led metadata, and richer Premium card treatment.
 - README screenshots generated with Playwright.
 - Basic Open Graph/Twitter metadata and a polished marketplace-style UI.
 

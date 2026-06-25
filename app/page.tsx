@@ -3,7 +3,6 @@ import {
   BadgeCheck,
   GraduationCap,
   MapPinned,
-  Search,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -44,8 +43,8 @@ export default function Home() {
       id="main-content"
     >
       <section className="mx-auto flex w-full max-w-7xl flex-col px-5 py-8 sm:px-8 lg:px-10 lg:py-12">
-        <header className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-stretch">
-          <div className="flex min-h-[420px] flex-col justify-between rounded-lg border border-white/80 bg-white p-6 shadow-sm md:p-8">
+        <header className="rounded-lg border border-white/80 bg-white p-6 shadow-sm md:p-8 lg:p-10">
+          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-amber-700">
                 <Sparkles aria-hidden className="size-4" />
@@ -61,7 +60,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:max-w-md">
+            <div className="grid grid-cols-2 gap-3 sm:min-w-80">
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
                 <p className="text-3xl font-semibold text-slate-950">
                   {practitionersByTier.length}
@@ -76,53 +75,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
-          <aside
-            aria-label="Student search preview"
-            className="rounded-lg border border-slate-200 bg-slate-950 p-5 text-white shadow-sm md:p-6"
-          >
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-amber-300">
-                  Student brief
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold">
-                  Advanced skin training
-                </h2>
-              </div>
-              <div className="rounded-full bg-white/10 p-3">
-                <Search aria-hidden className="size-5" />
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-3">
-              <PreviewRow label="Specialism" value="Laser and IPL" />
-              <PreviewRow label="Preferred fit" value="Advanced injectors" />
-              <PreviewRow label="Format" value="1:1 or small group" />
-            </div>
-
-            <div className="mt-6 rounded-lg border border-white/10 bg-white/10 p-4">
-              <p className="text-sm font-semibold text-amber-200">
-                Recommended match
-              </p>
-              <p className="mt-2 text-xl font-semibold">Priya Nair</p>
-              <p className="mt-2 text-sm leading-6 text-slate-300">
-                Premium profile with advanced clinical governance, laser
-                training, and complication management.
-              </p>
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              {["Verified", "Premium", "Clinical governance"].map((item) => (
-                <span
-                  className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-950"
-                  key={item}
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-          </aside>
         </header>
 
         <section
@@ -157,16 +109,5 @@ export default function Home() {
         </Suspense>
       </section>
     </main>
-  );
-}
-
-function PreviewRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.06] p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-        {label}
-      </p>
-      <p className="mt-1 font-semibold text-white">{value}</p>
-    </div>
   );
 }
