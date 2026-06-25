@@ -26,7 +26,9 @@ Built:
 - A public directory page for vetted UK aesthetics trainers.
 - Typed in-memory seed data for 8 fictional practitioners.
 - Premium and Standard tiers, with Premium listings ordered first and styled as featured listings.
-- Client-side filtering by specialism.
+- Client-side filtering by specialism using accessible filter chips.
+- Decision-support fields on each trainer card: best-fit audience, training format, trust signals, and cohort timing.
+- A transparent ranking note explaining Premium placement and relevance sorting.
 - Responsive card grid with result counts and a resettable empty state.
 - Basic metadata and a polished marketplace-style UI.
 
@@ -44,6 +46,7 @@ What I would do next:
 - Move practitioners into a database with subscription status, approval state, and canonical specialism tags.
 - Add profile pages with trainer credentials, course dates, student outcomes, and enquiry CTAs.
 - Define the ranking rules for Premium vs Standard listings so the commercial promise is explicit.
+- Add a richer relevance model once there is real student behaviour data.
 - Add search across trainer names, locations, specialisms, and course descriptions.
 - Add analytics for filter usage and profile click-through so the marketplace can learn what students need.
 
@@ -54,6 +57,8 @@ The biggest ambiguity is the word "practitioner". The product description says t
 The tier rules are also underspecified. The brief gives prices for Standard and Premium, but not the benefits. I made Premium more prominent through ordering and visual treatment. In a real product I would want the commercial promise defined: always ranked first, larger cards, badges, lead routing priority, richer profiles, or some combination.
 
 The ranking model needs a spec. If Premium always outranks Standard, the directory is commercially simple but may be less useful for students. If quality or relevance can outrank Premium, the business needs to explain what Premium actually buys.
+
+I added a visible ranking note in the interface because paid placement versus student relevance is too important to leave implicit. In production I would want this agreed with the business before launch, especially in a trust-sensitive education marketplace.
 
 The vetting model is central to trust but outside the brief. A real directory needs approval states, credential checks, insurance or qualification fields, and a way to remove or suspend listings.
 
