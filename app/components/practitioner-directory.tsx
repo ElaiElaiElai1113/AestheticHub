@@ -88,9 +88,9 @@ export function PractitionerDirectory({
 
   return (
     <section aria-labelledby="directory-heading" className="mt-10">
-      <div className="rounded-lg border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur sm:p-5">
-        <div className="grid gap-4 lg:grid-cols-[minmax(220px,0.72fr)_1fr] lg:items-start">
-          <div className="lg:pt-1">
+      <div>
+        <div className="flex flex-col gap-4 border-b border-slate-200 pb-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
               Find the right course lead
             </p>
@@ -100,12 +100,9 @@ export function PractitionerDirectory({
             >
               Browse vetted UK aesthetics trainers
             </h2>
-            <p className="mt-2 max-w-sm text-sm leading-6 text-slate-600">
-              Vetted trainers, filtered by tier and specialism.
-            </p>
           </div>
 
-          <div className="grid gap-3 rounded-lg bg-slate-50/80 p-3 lg:grid-cols-[auto_1fr] lg:items-start">
+          <div className="grid gap-3 lg:min-w-[620px] lg:grid-cols-[auto_1fr] lg:items-start">
             <FilterGroup
               headingId="tier-filter-heading"
               label="Tier"
@@ -137,7 +134,7 @@ export function PractitionerDirectory({
         </div>
 
         <div
-          className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-3 border-b border-slate-200 py-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between"
           id="directory-results-summary"
         >
           <div className="space-y-1">
@@ -156,7 +153,7 @@ export function PractitionerDirectory({
             </p>
           </div>
           <button
-            className="w-fit rounded-full border border-slate-200 px-3.5 py-1.5 font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="w-fit rounded-full border border-slate-200 bg-white px-3.5 py-1.5 font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
             disabled={!hasActiveFilters}
             onClick={resetFilters}
             type="button"
@@ -243,7 +240,7 @@ function FilterButton({
         "rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
         isSelected
           ? "border-slate-950 bg-slate-950 text-white shadow-sm"
-          : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+          : "border-slate-200 bg-white/80 text-slate-700 hover:border-slate-300 hover:bg-white",
       ].join(" ")}
       onClick={onClick}
       type="button"
