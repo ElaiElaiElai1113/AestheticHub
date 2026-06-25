@@ -112,7 +112,7 @@ Built:
 - Lightweight automated tests for ranking and filtering behaviour.
 - Accessibility polish including a skip link, labelled filter group, and keyboard-visible controls.
 - Trust-first UI polish: stronger hero, trust strip, icon-led metadata, and richer Premium card treatment.
-- UI/UX refinement: compact trainer cards, clearer filter toolbar, shorter ranking copy, and mobile-friendly card density.
+- UI/UX refinement: compact trainer cards, slim filter toolbar, shorter ranking copy, and mobile-friendly card density.
 - README screenshots generated with Playwright.
 - Basic Open Graph/Twitter metadata and a polished marketplace-style UI.
 

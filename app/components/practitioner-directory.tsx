@@ -88,9 +88,9 @@ export function PractitionerDirectory({
 
   return (
     <section aria-labelledby="directory-heading" className="mt-10">
-      <div className="rounded-lg border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur">
-        <div className="flex flex-col gap-5">
-          <div>
+      <div className="rounded-lg border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur sm:p-5">
+        <div className="grid gap-4 lg:grid-cols-[minmax(220px,0.72fr)_1fr] lg:items-start">
+          <div className="lg:pt-1">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
               Find the right course lead
             </p>
@@ -100,18 +100,12 @@ export function PractitionerDirectory({
             >
               Browse vetted UK aesthetics trainers
             </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Filter by specialism and listing tier to compare trainers who
-              match the treatment area or business skill you want to develop
-              next.
-            </p>
-            <p className="mt-3 max-w-2xl text-sm font-medium text-slate-700">
-              All listed trainers are reviewed before appearing in the
-              directory.
+            <p className="mt-2 max-w-sm text-sm leading-6 text-slate-600">
+              Vetted trainers, filtered by tier and specialism.
             </p>
           </div>
 
-          <div className="grid gap-4 rounded-lg border border-slate-100 bg-slate-50/80 p-3 lg:grid-cols-[auto_1fr] lg:items-start">
+          <div className="grid gap-3 rounded-lg bg-slate-50/80 p-3 lg:grid-cols-[auto_1fr] lg:items-start">
             <FilterGroup
               headingId="tier-filter-heading"
               label="Tier"
@@ -143,10 +137,10 @@ export function PractitionerDirectory({
         </div>
 
         <div
-          className="mt-4 grid gap-4 border-t border-slate-100 pt-4 text-sm text-slate-600 lg:grid-cols-[1fr_auto] lg:items-start"
+          className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between"
           id="directory-results-summary"
         >
-          <div className="space-y-2">
+          <div className="space-y-1">
             <p>
               Showing{" "}
               <span className="font-semibold text-slate-950">
@@ -157,13 +151,12 @@ export function PractitionerDirectory({
                 : ` for ${selectedSpecialism}`}
               {selectedTierLabel ? ` in ${selectedTierLabel}` : ""}
             </p>
-            <p className="max-w-3xl leading-6">
-              Premium trainers are featured first. Within each tier, results
-              are sorted by selected-specialism relevance and trainer name.
+            <p className="max-w-3xl text-xs leading-5 text-slate-500">
+              Premium appears first, then results sort by relevance and name.
             </p>
           </div>
           <button
-            className="w-fit rounded-full border border-slate-200 px-4 py-2 font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="w-fit rounded-full border border-slate-200 px-3.5 py-1.5 font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
             disabled={!hasActiveFilters}
             onClick={resetFilters}
             type="button"
@@ -224,12 +217,12 @@ function FilterGroup({
   return (
     <div aria-labelledby={headingId} role="group">
       <h3
-        className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
+        className="mb-1.5 text-[0.68rem] font-semibold uppercase tracking-wide text-slate-500"
         id={headingId}
       >
         {label}
       </h3>
-      <div className="flex flex-wrap gap-2">{children}</div>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
     </div>
   );
 }
@@ -247,7 +240,7 @@ function FilterButton({
     <button
       aria-pressed={isSelected}
       className={[
-        "rounded-full border px-3.5 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
+        "rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
         isSelected
           ? "border-slate-950 bg-slate-950 text-white shadow-sm"
           : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
