@@ -15,16 +15,23 @@ export function PractitionerCard({
   practitioner,
 }: PractitionerCardProps) {
   const isPremium = practitioner.tier === "premium";
+  const visibleTrustSignals = practitioner.trustSignals.slice(0, 2);
+  const hiddenTrustSignalCount =
+    practitioner.trustSignals.length - visibleTrustSignals.length;
 
   return (
     <article
       className={[
-        "group flex h-full flex-col rounded-2xl border bg-white p-6 shadow-sm transition duration-200",
+        "group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white p-6 shadow-sm transition duration-200",
         isPremium
-          ? "border-amber-300 ring-1 ring-amber-200 hover:-translate-y-1 hover:shadow-xl"
+          ? "border-amber-200 ring-1 ring-amber-100 hover:-translate-y-1 hover:shadow-xl"
           : "border-slate-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md",
       ].join(" ")}
     >
+      {isPremium ? (
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-300 via-amber-200 to-transparent" />
+      ) : null}
+
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-slate-500">
@@ -47,7 +54,7 @@ export function PractitionerCard({
       </div>
 
       {isPremium ? (
-        <p className="mt-4 w-fit rounded-full bg-slate-950 px-3 py-1 text-xs font-medium text-white">
+        <p className="mt-4 w-fit rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-100">
           Featured trainer
         </p>
       ) : null}
@@ -62,7 +69,7 @@ export function PractitionerCard({
         {practitioner.summary}
       </p>
 
-      <dl className="mt-6 grid gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-4 text-sm sm:grid-cols-3">
+      <dl className="mt-5 grid gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-4 text-sm sm:grid-cols-3">
         <div>
           <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
             Best for
@@ -89,7 +96,7 @@ export function PractitionerCard({
         </div>
       </dl>
 
-      <div className="mt-6 flex flex-wrap gap-2">
+      <div className="mt-5 flex flex-wrap gap-2">
         {practitioner.specialisms.map((specialism) => (
           <span
             className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700"
@@ -100,12 +107,12 @@ export function PractitionerCard({
         ))}
       </div>
 
-      <div className="mt-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <div className="mt-4">
+        <p className="text-[0.7rem] font-semibold uppercase tracking-wide text-slate-500">
           Trust signals
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {practitioner.trustSignals.map((signal) => (
+          {visibleTrustSignals.map((signal) => (
             <span
               className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200"
               key={signal}
@@ -113,6 +120,11 @@ export function PractitionerCard({
               {signal}
             </span>
           ))}
+          {hiddenTrustSignalCount > 0 ? (
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
+              +{hiddenTrustSignalCount} more
+            </span>
+          ) : null}
         </div>
       </div>
 
