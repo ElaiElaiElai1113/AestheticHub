@@ -8,6 +8,10 @@ export type Practitioner = {
   tier: PractitionerTier;
   summary: string;
   yearsTraining: number;
+  audience: string;
+  format: string;
+  trustSignals: string[];
+  nextCohort: string;
 };
 
 export const practitioners: Practitioner[] = [
@@ -24,6 +28,10 @@ export const practitioners: Practitioner[] = [
     summary:
       "Doctor-led training with small clinical cohorts and complication-safe protocols.",
     yearsTraining: 8,
+    audience: "Advanced injectors",
+    format: "Small group",
+    trustSignals: ["Doctor-led", "CPD aligned", "Complications support"],
+    nextCohort: "Next cohort: 12 July",
   },
   {
     id: "the-dermal-lab",
@@ -34,6 +42,10 @@ export const practitioners: Practitioner[] = [
     summary:
       "Commercially focused injectable training for practitioners building private clinics.",
     yearsTraining: 6,
+    audience: "Clinic owners",
+    format: "Hands-on models",
+    trustSignals: ["Business mentoring", "Live model practice", "Aftercare support"],
+    nextCohort: "Monthly intake",
   },
   {
     id: "northskin-training",
@@ -44,6 +56,10 @@ export const practitioners: Practitioner[] = [
     summary:
       "Device-led skin training with practical sessions across laser safety and protocols.",
     yearsTraining: 5,
+    audience: "Skin specialists",
+    format: "Blended learning",
+    trustSignals: ["Laser safety", "Protocol templates", "CPD aligned"],
+    nextCohort: "Next cohort: 19 July",
   },
   {
     id: "harley-aesthetic-institute",
@@ -54,6 +70,10 @@ export const practitioners: Practitioner[] = [
     summary:
       "Central London academy specialising in anatomy-led injectable foundations.",
     yearsTraining: 10,
+    audience: "Beginners",
+    format: "Hands-on models",
+    trustSignals: ["Doctor-led", "Live model practice", "Anatomy-first"],
+    nextCohort: "Limited July places",
   },
   {
     id: "westcoast-skin-school",
@@ -64,6 +84,10 @@ export const practitioners: Practitioner[] = [
     summary:
       "Supportive hands-on courses for nurses and therapists expanding into skin quality.",
     yearsTraining: 4,
+    audience: "Skin specialists",
+    format: "Small group",
+    trustSignals: ["Post-course mentoring", "Live demos", "CPD aligned"],
+    nextCohort: "Next cohort: 26 July",
   },
   {
     id: "southampton-injectables",
@@ -74,6 +98,10 @@ export const practitioners: Practitioner[] = [
     summary:
       "Practical dermal filler training with a focus on assessment and risk reduction.",
     yearsTraining: 7,
+    audience: "Intermediate injectors",
+    format: "1:1 mentoring",
+    trustSignals: ["Complications support", "Assessment framework", "Case reviews"],
+    nextCohort: "Private dates available",
   },
   {
     id: "newcastle-face-academy",
@@ -84,6 +112,10 @@ export const practitioners: Practitioner[] = [
     summary:
       "Beginner-friendly toxin courses with mentoring for first-year aesthetic practices.",
     yearsTraining: 3,
+    audience: "Beginners",
+    format: "Small group",
+    trustSignals: ["Starter templates", "Post-course mentoring", "Clinic setup"],
+    nextCohort: "Monthly intake",
   },
   {
     id: "bristol-clinical-aesthetics",
@@ -98,6 +130,10 @@ export const practitioners: Practitioner[] = [
     summary:
       "Advanced clinical training for experienced injectors and skin practitioners.",
     yearsTraining: 9,
+    audience: "Advanced injectors",
+    format: "1:1 mentoring",
+    trustSignals: ["Complications support", "Cadaver anatomy", "Clinical governance"],
+    nextCohort: "Next cohort: 3 August",
   },
 ];
 
@@ -115,6 +151,32 @@ export const practitionersByTier = [...practitioners].sort((first, second) => {
 
   return first.name.localeCompare(second.name);
 });
+
+export function rankPractitionersForSpecialism(
+  items: Practitioner[],
+  selectedSpecialism: string | null,
+) {
+  return [...items].sort((first, second) => {
+    const tierDifference = tierWeight[first.tier] - tierWeight[second.tier];
+
+    if (tierDifference !== 0) {
+      return tierDifference;
+    }
+
+    const firstMatches = selectedSpecialism
+      ? first.specialisms.includes(selectedSpecialism)
+      : false;
+    const secondMatches = selectedSpecialism
+      ? second.specialisms.includes(selectedSpecialism)
+      : false;
+
+    if (firstMatches !== secondMatches) {
+      return firstMatches ? -1 : 1;
+    }
+
+    return first.name.localeCompare(second.name);
+  });
+}
 
 export const specialisms = Array.from(
   new Set(practitioners.flatMap((practitioner) => practitioner.specialisms)),
