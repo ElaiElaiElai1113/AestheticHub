@@ -9,6 +9,7 @@ export type Practitioner = {
   summary: string;
   yearsTraining: number;
   audience: string;
+  bestMatch: string;
   format: string;
   trustSignals: string[];
   nextCohort: string;
@@ -29,6 +30,7 @@ export const practitioners: Practitioner[] = [
       "Doctor-led training with small clinical cohorts and complication-safe protocols.",
     yearsTraining: 8,
     audience: "Advanced injectors",
+    bestMatch: "Advanced injectors who want complication-safe protocols.",
     format: "Small group",
     trustSignals: ["Doctor-led", "CPD aligned", "Complications support"],
     nextCohort: "Next cohort: 12 July",
@@ -43,6 +45,7 @@ export const practitioners: Practitioner[] = [
       "Commercially focused injectable training for practitioners building private clinics.",
     yearsTraining: 6,
     audience: "Clinic owners",
+    bestMatch: "Clinic owners growing a profitable injectable offer.",
     format: "Hands-on models",
     trustSignals: ["Business mentoring", "Live model practice", "Aftercare support"],
     nextCohort: "Monthly intake",
@@ -57,6 +60,7 @@ export const practitioners: Practitioner[] = [
       "Device-led skin training with practical sessions across laser safety and protocols.",
     yearsTraining: 5,
     audience: "Skin specialists",
+    bestMatch: "Skin specialists adding laser-safe treatment pathways.",
     format: "Blended learning",
     trustSignals: ["Laser safety", "Protocol templates", "CPD aligned"],
     nextCohort: "Next cohort: 19 July",
@@ -71,6 +75,7 @@ export const practitioners: Practitioner[] = [
       "Central London academy specialising in anatomy-led injectable foundations.",
     yearsTraining: 10,
     audience: "Beginners",
+    bestMatch: "Beginners who want anatomy-led injectable foundations.",
     format: "Hands-on models",
     trustSignals: ["Doctor-led", "Live model practice", "Anatomy-first"],
     nextCohort: "Limited July places",
@@ -85,6 +90,7 @@ export const practitioners: Practitioner[] = [
       "Supportive hands-on courses for nurses and therapists expanding into skin quality.",
     yearsTraining: 4,
     audience: "Skin specialists",
+    bestMatch: "Skin specialists moving into skin-quality treatments.",
     format: "Small group",
     trustSignals: ["Post-course mentoring", "Live demos", "CPD aligned"],
     nextCohort: "Next cohort: 26 July",
@@ -99,6 +105,7 @@ export const practitioners: Practitioner[] = [
       "Practical dermal filler training with a focus on assessment and risk reduction.",
     yearsTraining: 7,
     audience: "Intermediate injectors",
+    bestMatch: "Intermediate injectors sharpening assessment and safety.",
     format: "1:1 mentoring",
     trustSignals: ["Complications support", "Assessment framework", "Case reviews"],
     nextCohort: "Private dates available",
@@ -113,6 +120,7 @@ export const practitioners: Practitioner[] = [
       "Beginner-friendly toxin courses with mentoring for first-year aesthetic practices.",
     yearsTraining: 3,
     audience: "Beginners",
+    bestMatch: "New aesthetic practitioners building first-year confidence.",
     format: "Small group",
     trustSignals: ["Starter templates", "Post-course mentoring", "Clinic setup"],
     nextCohort: "Monthly intake",
@@ -131,6 +139,7 @@ export const practitioners: Practitioner[] = [
       "Advanced clinical training for experienced injectors and skin practitioners.",
     yearsTraining: 9,
     audience: "Advanced injectors",
+    bestMatch: "Experienced injectors seeking advanced clinical governance.",
     format: "1:1 mentoring",
     trustSignals: ["Complications support", "Cadaver anatomy", "Clinical governance"],
     nextCohort: "Next cohort: 3 August",
