@@ -1,5 +1,7 @@
 import {
   BadgeCheck,
+  Bookmark,
+  BookmarkCheck,
   CalendarDays,
   Clock3,
   MapPin,
@@ -11,7 +13,9 @@ import {
 import type { Practitioner } from "@/app/data/practitioners";
 
 type PractitionerCardProps = {
+  isShortlisted: boolean;
   matchesSelectedSpecialism: boolean;
+  onToggleShortlist: () => void;
   practitioner: Practitioner;
 };
 
@@ -21,10 +25,13 @@ const tierLabel: Record<Practitioner["tier"], string> = {
 };
 
 export function PractitionerCard({
+  isShortlisted,
   matchesSelectedSpecialism,
+  onToggleShortlist,
   practitioner,
 }: PractitionerCardProps) {
   const isPremium = practitioner.tier === "premium";
+  const ShortlistIcon = isShortlisted ? BookmarkCheck : Bookmark;
   const visibleSpecialisms = practitioner.specialisms.slice(0, 2);
   const hiddenSpecialismCount =
     practitioner.specialisms.length - visibleSpecialisms.length;
@@ -159,9 +166,25 @@ export function PractitionerCard({
           <span className="font-medium text-slate-950">
             {practitioner.yearsTraining}+ years training
           </span>
-          <span className={isPremium ? "text-amber-700" : "text-slate-500"}>
-            {isPremium ? "Priority listing" : "Listed trainer"}
-          </span>
+          <button
+            aria-label={
+              isShortlisted
+                ? `Remove ${practitioner.name} from shortlist`
+                : `Add ${practitioner.name} to shortlist`
+            }
+            aria-pressed={isShortlisted}
+            className={[
+              "inline-flex min-w-28 items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition focus:outline-none focus:ring-4",
+              isShortlisted
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700 focus:ring-emerald-100"
+                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-950 focus:ring-slate-200",
+            ].join(" ")}
+            onClick={onToggleShortlist}
+            type="button"
+          >
+            <ShortlistIcon aria-hidden className="size-3.5" />
+            {isShortlisted ? "Saved" : "Shortlist"}
+          </button>
         </div>
       </div>
     </article>

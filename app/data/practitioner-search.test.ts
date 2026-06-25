@@ -80,6 +80,59 @@ describe("practitioner search helpers", () => {
     ]);
   });
 
+  it("searches trainers by name", () => {
+    const result = filterAndRankPractitioners(
+      practitioners,
+      allSpecialisms,
+      allTiers,
+      "priya",
+    );
+
+    expect(result.map((practitioner) => practitioner.name)).toEqual([
+      "Priya Nair",
+    ]);
+  });
+
+  it("searches trainers by location", () => {
+    const result = filterAndRankPractitioners(
+      practitioners,
+      allSpecialisms,
+      allTiers,
+      "leeds",
+    );
+
+    expect(result.map((practitioner) => practitioner.name)).toEqual([
+      "Kiran Shah",
+    ]);
+  });
+
+  it("searches trainers by specialism while keeping Premium listings first", () => {
+    const result = filterAndRankPractitioners(
+      practitioners,
+      allSpecialisms,
+      allTiers,
+      "business",
+    );
+
+    expect(result.map((practitioner) => practitioner.name)).toEqual([
+      "Natalie Price",
+      "Sofia Martin",
+    ]);
+  });
+
+  it("combines search with tier and specialism filters", () => {
+    const result = filterAndRankPractitioners(
+      practitioners,
+      "Skin Boosters",
+      "premium",
+      "business",
+    );
+
+    expect(result.map((practitioner) => practitioner.name)).toEqual([
+      "Natalie Price",
+    ]);
+  });
+
   it("accepts only known specialisms from a URL parameter", () => {
     expect(getSelectableSpecialism("Laser and IPL", specialisms)).toBe(
       "Laser and IPL",

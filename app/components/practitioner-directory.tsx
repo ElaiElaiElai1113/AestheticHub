@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { Search } from "lucide-react";
+import { useMemo, useSyncExternalStore } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { PractitionerCard } from "@/app/components/practitioner-card";
 import {
@@ -26,6 +27,12 @@ const tierFilters: { label: string; value: TierFilter }[] = [
   { label: "Standard", value: "standard" },
 ];
 
+const shortlistStorageKey = "aesthetic-training-hub-shortlist";
+const shortlistChangeEvent = "aesthetic-training-hub-shortlist-change";
+const emptyShortlistSnapshot: string[] = [];
+let cachedShortlistRaw: string | null = null;
+let cachedShortlistIds: string[] = [];
+
 export function PractitionerDirectory({
   practitioners,
   specialisms,
@@ -38,6 +45,8 @@ export function PractitionerDirectory({
     specialisms,
   );
   const selectedTier = getSelectableTier(searchParams.get("tier"));
+  const searchQuery = searchParams.get("q") ?? "";
+  const activeSearchQuery = searchQuery.trim();
 
   const selectedSpecialismForRanking =
     selectedSpecialism === allSpecialisms ? null : selectedSpecialism;
@@ -47,26 +56,47 @@ export function PractitionerDirectory({
       practitioners,
       selectedSpecialism,
       selectedTier,
+      searchQuery,
     );
-  }, [practitioners, selectedSpecialism, selectedTier]);
+  }, [practitioners, searchQuery, selectedSpecialism, selectedTier]);
 
   const resultLabel =
     filteredPractitioners.length === 1
       ? "1 trainer"
       : `${filteredPractitioners.length} trainers`;
   const hasActiveFilters =
-    selectedSpecialism !== allSpecialisms || selectedTier !== allTiers;
+    selectedSpecialism !== allSpecialisms ||
+    selectedTier !== allTiers ||
+    activeSearchQuery !== "";
   const selectedTierLabel =
     selectedTier === allTiers
       ? null
       : tierFilters.find((tier) => tier.value === selectedTier)?.label;
+  const storedShortlistedIds = useSyncExternalStore(
+    subscribeToShortlist,
+    getStoredShortlistSnapshot,
+    getServerShortlistSnapshot,
+  );
+  const validPractitionerIds = useMemo(
+    () => new Set(practitioners.map((practitioner) => practitioner.id)),
+    [practitioners],
+  );
+  const shortlistedIds = useMemo(
+    () => storedShortlistedIds.filter((id) => validPractitionerIds.has(id)),
+    [storedShortlistedIds, validPractitionerIds],
+  );
+  const shortlistLabel =
+    shortlistedIds.length === 1
+      ? "1 shortlisted"
+      : `${shortlistedIds.length} shortlisted`;
 
-  function updateUrlFilter(key: "specialism" | "tier", value: string) {
+  function updateUrlFilter(key: "specialism" | "tier" | "q", value: string) {
     const params = new URLSearchParams(searchParams.toString());
 
     if (
       (key === "specialism" && value === allSpecialisms) ||
-      (key === "tier" && value === allTiers)
+      (key === "tier" && value === allTiers) ||
+      (key === "q" && value.trim() === "")
     ) {
       params.delete(key);
     } else {
@@ -81,9 +111,20 @@ export function PractitionerDirectory({
     const params = new URLSearchParams(searchParams.toString());
     params.delete("specialism");
     params.delete("tier");
+    params.delete("q");
 
     const queryString = params.toString();
     window.history.pushState(null, "", queryString ? `${pathname}?${queryString}` : pathname);
+  }
+
+  function toggleShortlist(practitionerId: string) {
+    const nextIds = shortlistedIds.includes(practitionerId)
+      ? shortlistedIds.filter((id) => id !== practitionerId)
+      : [...shortlistedIds, practitionerId];
+
+    saveStoredShortlist(
+      nextIds.filter((id) => validPractitionerIds.has(id)),
+    );
   }
 
   return (
@@ -102,34 +143,51 @@ export function PractitionerDirectory({
             </h2>
           </div>
 
-          <div className="grid gap-3 lg:min-w-[620px] lg:grid-cols-[auto_1fr] lg:items-start">
-            <FilterGroup
-              headingId="tier-filter-heading"
-              label="Tier"
-            >
-              {tierFilters.map((tier) => (
-                <FilterButton
-                  isSelected={selectedTier === tier.value}
-                  key={tier.value}
-                  label={tier.label}
-                  onClick={() => updateUrlFilter("tier", tier.value)}
-                />
-              ))}
-            </FilterGroup>
+          <div className="flex flex-col gap-3 lg:min-w-[720px]">
+            <label className="relative block">
+              <span className="sr-only">Search trainers</span>
+              <Search
+                aria-hidden
+                className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                className="h-10 w-full rounded-full border border-slate-200 bg-white pl-9 pr-4 text-sm font-medium text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-200"
+                onChange={(event) => updateUrlFilter("q", event.target.value)}
+                placeholder="Search name, city, specialism"
+                type="search"
+                value={searchQuery}
+              />
+            </label>
 
-            <FilterGroup
-              headingId="specialism-filter-heading"
-              label="Specialism"
-            >
-              {[allSpecialisms, ...specialisms].map((specialism) => (
-                <FilterButton
-                  isSelected={selectedSpecialism === specialism}
-                  key={specialism}
-                  label={specialism}
-                  onClick={() => updateUrlFilter("specialism", specialism)}
-                />
-              ))}
-            </FilterGroup>
+            <div className="grid gap-3 lg:grid-cols-[auto_1fr] lg:items-start">
+              <FilterGroup
+                headingId="tier-filter-heading"
+                label="Tier"
+              >
+                {tierFilters.map((tier) => (
+                  <FilterButton
+                    isSelected={selectedTier === tier.value}
+                    key={tier.value}
+                    label={tier.label}
+                    onClick={() => updateUrlFilter("tier", tier.value)}
+                  />
+                ))}
+              </FilterGroup>
+
+              <FilterGroup
+                headingId="specialism-filter-heading"
+                label="Specialism"
+              >
+                {[allSpecialisms, ...specialisms].map((specialism) => (
+                  <FilterButton
+                    isSelected={selectedSpecialism === specialism}
+                    key={specialism}
+                    label={specialism}
+                    onClick={() => updateUrlFilter("specialism", specialism)}
+                  />
+                ))}
+              </FilterGroup>
+            </div>
           </div>
         </div>
 
@@ -147,9 +205,13 @@ export function PractitionerDirectory({
                 ? ""
                 : ` for ${selectedSpecialism}`}
               {selectedTierLabel ? ` in ${selectedTierLabel}` : ""}
+              {activeSearchQuery ? ` matching "${activeSearchQuery}"` : ""}
             </p>
             <p className="max-w-3xl text-xs leading-5 text-slate-500">
               Premium appears first, then results sort by relevance and name.
+              <span className="ml-2 font-semibold text-slate-700">
+                {shortlistLabel}.
+              </span>
             </p>
           </div>
           <button
@@ -170,12 +232,14 @@ export function PractitionerDirectory({
         >
           {filteredPractitioners.map((practitioner) => (
             <PractitionerCard
+              isShortlisted={shortlistedIds.includes(practitioner.id)}
               key={practitioner.id}
               matchesSelectedSpecialism={
                 selectedSpecialismForRanking
                   ? practitioner.specialisms.includes(selectedSpecialismForRanking)
                   : false
               }
+              onToggleShortlist={() => toggleShortlist(practitioner.id)}
               practitioner={practitioner}
             />
           ))}
@@ -248,4 +312,47 @@ function FilterButton({
       {label}
     </button>
   );
+}
+
+function subscribeToShortlist(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(shortlistChangeEvent, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(shortlistChangeEvent, onStoreChange);
+  };
+}
+
+function getServerShortlistSnapshot() {
+  return emptyShortlistSnapshot;
+}
+
+function getStoredShortlistSnapshot() {
+  const rawShortlist = window.localStorage.getItem(shortlistStorageKey) ?? "[]";
+
+  if (rawShortlist === cachedShortlistRaw) {
+    return cachedShortlistIds;
+  }
+
+  try {
+    const parsedShortlist = JSON.parse(rawShortlist) as unknown;
+
+    cachedShortlistIds = Array.isArray(parsedShortlist)
+      ? parsedShortlist.filter((id): id is string => typeof id === "string")
+      : [];
+  } catch {
+    cachedShortlistIds = [];
+  }
+
+  cachedShortlistRaw = rawShortlist;
+  return cachedShortlistIds;
+}
+
+function saveStoredShortlist(shortlistedIds: string[]) {
+  const nextRawShortlist = JSON.stringify(shortlistedIds);
+  window.localStorage.setItem(shortlistStorageKey, nextRawShortlist);
+  cachedShortlistRaw = nextRawShortlist;
+  cachedShortlistIds = shortlistedIds;
+  window.dispatchEvent(new Event(shortlistChangeEvent));
 }

@@ -9,7 +9,8 @@ This project implements the public directory slice for the Aesthetic Training Hu
 - Lists aesthetics trainers with name, specialisms, location, and subscription tier.
 - Supports the two requested paid tiers: Standard and Premium.
 - Makes Premium trainers stand out through ordering, visual treatment, and richer card emphasis.
-- Lets students filter trainers by specialism and listing tier.
+- Lets students search and filter trainers by specialism and listing tier.
+- Lets students shortlist trainers locally while comparing options.
 - Includes populated seed data using a typed in-memory dataset.
 - Uses Next.js, React, and TypeScript.
 
@@ -77,10 +78,10 @@ Checked locally:
 - `npm run lint`
 - `npm test`
 - `npm run build`
-- Browser smoke test of the directory, specialism/tier filters, reset state, tier ordering, and mobile layout
+- Browser smoke test of the directory, search, specialism/tier filters, shortlist persistence, reset state, tier ordering, and mobile layout
 - Playwright screenshot pass for desktop, filtered results, and mobile layouts
 
-The automated tests cover ranking, specialism filtering, tier filtering, combined filters, invalid URL parameter fallback, and empty-result behaviour.
+The automated tests cover ranking, specialism filtering, tier filtering, keyword search, combined filters, invalid URL parameter fallback, and empty-result behaviour.
 
 ## Design Decisions
 
@@ -90,7 +91,11 @@ The visual direction is trust-first rather than decorative. The hero sets clear 
 
 Filtering is by specialism and listing tier. Specialism is the strongest student intent signal, while the tier filter makes the commercial distinction transparent and easy to inspect.
 
-The selected filters are synced to the URL, for example `/?specialism=Laser%20and%20IPL&tier=premium`, so filtered directory states can be shared and reviewed directly.
+Search covers trainer names, locations, tiers, and specialisms. I kept this scoped to structured fields rather than free-text summaries so keyword matches are predictable for students.
+
+The selected filters and search query are synced to the URL, for example `/?specialism=Laser%20and%20IPL&tier=premium&q=leeds`, so filtered directory states can be shared and reviewed directly.
+
+The shortlist is stored in browser storage. It gives the slice a realistic comparison behavior without adding accounts, backend persistence, or a fake enquiry flow.
 
 The cards include decision-support fields such as best-fit audience, format, trust signals, and cohort timing. Longer tag lists are collapsed into "+ more" chips so students can scan results faster.
 
@@ -104,12 +109,14 @@ Built:
 - Typed in-memory seed data for 8 fictional practitioners.
 - Premium and Standard tiers, with Premium listings ordered first and styled as featured listings.
 - Client-side filtering by specialism and tier using accessible filter chips.
+- URL-synced keyword search across trainer name, city, tier, and specialism.
+- A persistent local shortlist so students can save trainers while comparing results.
 - Decision-support fields on each trainer card: best-fit audience, training format, trust signals, and cohort timing.
 - A transparent ranking note explaining Premium placement and relevance sorting.
 - Responsive card grid with result counts and a resettable empty state.
 - Empty-state handling when no trainers match the selected specialism.
-- Shareable URL state for selected specialism and tier filters.
-- Lightweight automated tests for ranking and filtering behaviour.
+- Shareable URL state for selected specialism, tier, and search filters.
+- Lightweight automated tests for ranking, search, and filtering behaviour.
 - Accessibility polish including a skip link, labelled filter group, and keyboard-visible controls.
 - Trust-first UI polish: stronger hero, trust strip, icon-led metadata, and richer Premium card treatment.
 - UI/UX refinement: compact trainer cards, tab-style filter bar, shorter ranking copy, and mobile-friendly card density.
@@ -131,7 +138,7 @@ What I would do next:
 - Add profile pages with trainer credentials, course dates, student outcomes, and enquiry CTAs.
 - Define the ranking rules for Premium vs Standard listings so the commercial promise is explicit.
 - Add a richer relevance model once there is real student behaviour data.
-- Add search across trainer names, locations, specialisms, and course descriptions.
+- Promote the shortlist into a proper compare/enquiry flow once accounts or lead capture exist.
 - Add analytics for filter usage and profile click-through so the marketplace can learn what students need.
 - Add component-level interaction tests and a small Playwright smoke test script for CI.
 
