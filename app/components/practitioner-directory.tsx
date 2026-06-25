@@ -5,8 +5,11 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { PractitionerCard } from "@/app/components/practitioner-card";
 import {
   allSpecialisms,
+  allTiers,
   filterAndRankPractitioners,
   getSelectableSpecialism,
+  getSelectableTier,
+  type TierFilter,
 } from "@/app/data/practitioner-search";
 import {
   type Practitioner,
@@ -16,6 +19,12 @@ type PractitionerDirectoryProps = {
   practitioners: Practitioner[];
   specialisms: string[];
 };
+
+const tierFilters: { label: string; value: TierFilter }[] = [
+  { label: allTiers, value: allTiers },
+  { label: "Premium", value: "premium" },
+  { label: "Standard", value: "standard" },
+];
 
 export function PractitionerDirectory({
   practitioners,
@@ -28,27 +37,50 @@ export function PractitionerDirectory({
     searchParams.get("specialism"),
     specialisms,
   );
+  const selectedTier = getSelectableTier(searchParams.get("tier"));
 
   const selectedSpecialismForRanking =
     selectedSpecialism === allSpecialisms ? null : selectedSpecialism;
 
   const filteredPractitioners = useMemo(() => {
-    return filterAndRankPractitioners(practitioners, selectedSpecialism);
-  }, [practitioners, selectedSpecialism]);
+    return filterAndRankPractitioners(
+      practitioners,
+      selectedSpecialism,
+      selectedTier,
+    );
+  }, [practitioners, selectedSpecialism, selectedTier]);
 
   const resultLabel =
     filteredPractitioners.length === 1
       ? "1 trainer"
       : `${filteredPractitioners.length} trainers`;
+  const hasActiveFilters =
+    selectedSpecialism !== allSpecialisms || selectedTier !== allTiers;
+  const selectedTierLabel =
+    selectedTier === allTiers
+      ? null
+      : tierFilters.find((tier) => tier.value === selectedTier)?.label;
 
-  function updateSelectedSpecialism(nextSpecialism: string) {
+  function updateUrlFilter(key: "specialism" | "tier", value: string) {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (nextSpecialism === allSpecialisms) {
-      params.delete("specialism");
+    if (
+      (key === "specialism" && value === allSpecialisms) ||
+      (key === "tier" && value === allTiers)
+    ) {
+      params.delete(key);
     } else {
-      params.set("specialism", nextSpecialism);
+      params.set(key, value);
     }
+
+    const queryString = params.toString();
+    window.history.pushState(null, "", queryString ? `${pathname}?${queryString}` : pathname);
+  }
+
+  function resetFilters() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("specialism");
+    params.delete("tier");
 
     const queryString = params.toString();
     window.history.pushState(null, "", queryString ? `${pathname}?${queryString}` : pathname);
@@ -69,8 +101,9 @@ export function PractitionerDirectory({
               Browse vetted UK aesthetics trainers
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Filter by specialism to compare trainers who match the treatment
-              area or business skill you want to develop next.
+              Filter by specialism and listing tier to compare trainers who
+              match the treatment area or business skill you want to develop
+              next.
             </p>
             <p className="mt-3 max-w-2xl text-sm font-medium text-slate-700">
               All listed trainers are reviewed before appearing in the
@@ -78,34 +111,34 @@ export function PractitionerDirectory({
             </p>
           </div>
 
-          <div
-            aria-labelledby="specialism-filter-heading"
-            className="flex flex-wrap gap-2"
-            role="group"
-          >
-            <h3 className="sr-only" id="specialism-filter-heading">
-              Filter trainers by specialism
-            </h3>
-            {[allSpecialisms, ...specialisms].map((specialism) => {
-              const isSelected = selectedSpecialism === specialism;
+          <div className="grid gap-4">
+            <FilterGroup
+              headingId="tier-filter-heading"
+              label="Filter trainers by listing tier"
+            >
+              {tierFilters.map((tier) => (
+                <FilterButton
+                  isSelected={selectedTier === tier.value}
+                  key={tier.value}
+                  label={tier.label}
+                  onClick={() => updateUrlFilter("tier", tier.value)}
+                />
+              ))}
+            </FilterGroup>
 
-              return (
-                <button
-                  aria-pressed={isSelected}
-                  className={[
-                    "rounded-full border px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
-                    isSelected
-                      ? "border-slate-950 bg-slate-950 text-white shadow-sm"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
-                  ].join(" ")}
+            <FilterGroup
+              headingId="specialism-filter-heading"
+              label="Filter trainers by specialism"
+            >
+              {[allSpecialisms, ...specialisms].map((specialism) => (
+                <FilterButton
+                  isSelected={selectedSpecialism === specialism}
                   key={specialism}
-                  onClick={() => updateSelectedSpecialism(specialism)}
-                  type="button"
-                >
-                  {specialism}
-                </button>
-              );
-            })}
+                  label={specialism}
+                  onClick={() => updateUrlFilter("specialism", specialism)}
+                />
+              ))}
+            </FilterGroup>
           </div>
         </div>
 
@@ -122,20 +155,22 @@ export function PractitionerDirectory({
               {selectedSpecialism === allSpecialisms
                 ? ""
                 : ` for ${selectedSpecialism}`}
+              {selectedTierLabel ? ` in ${selectedTierLabel}` : ""}
             </p>
             <p className="max-w-3xl leading-6">
               Results show Premium trainers first as featured placements. Within
               each tier, selected-specialism matches are prioritised, then
-              sorted by trainer name.
+              sorted by trainer name. Tier filters narrow the list without
+              changing those ranking rules.
             </p>
           </div>
           <button
             className="w-fit rounded-full border border-slate-200 px-4 py-2 font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={selectedSpecialism === allSpecialisms}
-            onClick={() => updateSelectedSpecialism(allSpecialisms)}
+            disabled={!hasActiveFilters}
+            onClick={resetFilters}
             type="button"
           >
-            Reset filter
+            Reset filters
           </button>
         </div>
       </div>
@@ -168,7 +203,7 @@ export function PractitionerDirectory({
           </p>
           <button
             className="mt-5 rounded-full bg-slate-950 px-5 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-            onClick={() => updateSelectedSpecialism(allSpecialisms)}
+            onClick={resetFilters}
             type="button"
           >
             Show all trainers
@@ -176,5 +211,50 @@ export function PractitionerDirectory({
         </div>
       )}
     </section>
+  );
+}
+
+function FilterGroup({
+  children,
+  headingId,
+  label,
+}: {
+  children: React.ReactNode;
+  headingId: string;
+  label: string;
+}) {
+  return (
+    <div aria-labelledby={headingId} role="group">
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500" id={headingId}>
+        {label}
+      </h3>
+      <div className="flex flex-wrap gap-2">{children}</div>
+    </div>
+  );
+}
+
+function FilterButton({
+  isSelected,
+  label,
+  onClick,
+}: {
+  isSelected: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      aria-pressed={isSelected}
+      className={[
+        "rounded-full border px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
+        isSelected
+          ? "border-slate-950 bg-slate-950 text-white shadow-sm"
+          : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+      ].join(" ")}
+      onClick={onClick}
+      type="button"
+    >
+      {label}
+    </button>
   );
 }

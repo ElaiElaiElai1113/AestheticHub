@@ -9,7 +9,7 @@ This project implements the public directory slice for the Aesthetic Training Hu
 - Lists aesthetics trainers with name, specialisms, location, and subscription tier.
 - Supports the two requested paid tiers: Standard and Premium.
 - Makes Premium trainers stand out through ordering, visual treatment, and richer card emphasis.
-- Lets students filter trainers by specialism.
+- Lets students filter trainers by specialism and listing tier.
 - Includes populated seed data using a typed in-memory dataset.
 - Uses Next.js, React, and TypeScript.
 
@@ -77,10 +77,10 @@ Checked locally:
 - `npm run lint`
 - `npm test`
 - `npm run build`
-- Browser smoke test of the directory, specialism filters, reset state, tier ordering, and mobile layout
+- Browser smoke test of the directory, specialism/tier filters, reset state, tier ordering, and mobile layout
 - Playwright screenshot pass for desktop, filtered results, and mobile layouts
 
-The automated tests cover the ranking, filtering, invalid URL parameter fallback, and empty-result behaviour.
+The automated tests cover ranking, specialism filtering, tier filtering, combined filters, invalid URL parameter fallback, and empty-result behaviour.
 
 ## Design Decisions
 
@@ -88,9 +88,9 @@ Premium trainers are listed first and have stronger visual treatment because the
 
 The visual direction is trust-first rather than decorative. The hero sets clear marketplace positioning, the trust strip reinforces vetting and transparency, and the cards expose concrete decision signals before asking students to click further.
 
-Filtering is by specialism because that is likely to be a stronger student intent signal than location at this stage. A student usually knows the treatment area they want to learn before they decide how far they are willing to travel.
+Filtering is by specialism and listing tier. Specialism is the strongest student intent signal, while the tier filter makes the commercial distinction transparent and easy to inspect.
 
-The selected specialism is synced to the URL, for example `/?specialism=Laser%20and%20IPL`, so filtered directory states can be shared and reviewed directly.
+The selected filters are synced to the URL, for example `/?specialism=Laser%20and%20IPL&tier=premium`, so filtered directory states can be shared and reviewed directly.
 
 The cards include extra decision-support fields such as best-fit audience, format, trust signals, and cohort timing. These are still seed-data fields, but they show the kind of information a real marketplace would need to help students compare trainers.
 
@@ -103,12 +103,12 @@ Built:
 - A public directory page for vetted UK aesthetics trainers.
 - Typed in-memory seed data for 8 fictional practitioners.
 - Premium and Standard tiers, with Premium listings ordered first and styled as featured listings.
-- Client-side filtering by specialism using accessible filter chips.
+- Client-side filtering by specialism and tier using accessible filter chips.
 - Decision-support fields on each trainer card: best-fit audience, training format, trust signals, and cohort timing.
 - A transparent ranking note explaining Premium placement and relevance sorting.
 - Responsive card grid with result counts and a resettable empty state.
 - Empty-state handling when no trainers match the selected specialism.
-- Shareable URL state for selected specialism filters.
+- Shareable URL state for selected specialism and tier filters.
 - Lightweight automated tests for ranking and filtering behaviour.
 - Accessibility polish including a skip link, labelled filter group, and keyboard-visible controls.
 - Trust-first UI polish: stronger hero, trust strip, icon-led metadata, and richer Premium card treatment.
