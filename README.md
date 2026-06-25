@@ -19,6 +19,20 @@ npm run build
 npm run start
 ```
 
+## Deploying To Vercel
+
+Use Vercel's Next.js framework preset.
+
+Recommended settings:
+
+- Root Directory: repository root
+- Install Command: `npm install`
+- Build Command: `npm run build`
+- Output Directory: leave empty / Vercel default
+- Node.js Version: `24.x`
+
+The Node version is pinned in `package.json` through `engines.node` so Vercel builds against the same major runtime expected by this Next.js version.
+
 ## Progress Report
 
 Built:
