@@ -89,6 +89,8 @@ Premium trainers are listed first and have stronger visual treatment because the
 
 The visual direction is trust-first rather than decorative. The hero sets clear marketplace positioning, the trust strip reinforces vetting and transparency, and the compact cards expose concrete decision signals without overwhelming the directory.
 
+The UI uses a stronger editorial hero, a search-led directory header, and a Premium spotlight rail to make the page feel more like a curated marketplace than a plain listing table.
+
 Filtering is by specialism and listing tier. Specialism is the strongest student intent signal, while the tier filter makes the commercial distinction transparent and easy to inspect.
 
 Search covers trainer names, locations, tiers, and specialisms. I kept this scoped to structured fields rather than free-text summaries so keyword matches are predictable for students.
@@ -97,9 +99,42 @@ The selected filters and search query are synced to the URL, for example `/?spec
 
 The shortlist is stored in browser storage. It gives the slice a realistic comparison behavior without adding accounts, backend persistence, or a fake enquiry flow.
 
+When a trainer is saved, a sticky shortlist bar confirms the saved state and offers a clear action to remove the local shortlist. This makes the comparison behavior visible without pretending a full compare flow exists.
+
 The cards include decision-support fields such as best-fit audience, format, trust signals, and cohort timing. Longer tag lists are collapsed into "+ more" chips so students can scan results faster.
 
 The data stays in a typed in-memory dataset because persistence, onboarding, subscription checks, and approval workflows would be outside the intended half-day slice.
+
+## Product Management Notes
+
+The product has two customers with different needs. Students need to find a trainer they can trust for a specific treatment area, location, format, and experience level. Trainers need enough visibility and lead quality to justify a recurring listing fee.
+
+The main product tension is trust versus monetisation. Premium placement is commercially useful, but it can weaken the marketplace if students feel results are pay-to-win rather than relevant. I would keep paid placement visible, measure whether Premium listings still satisfy student intent, and define when relevance should override tier.
+
+For this slice, I would judge success with:
+
+- Profile click-through rate from directory cards.
+- Search and filter usage rate.
+- Shortlist creation rate.
+- Enquiry or booking-start rate once CTAs exist.
+- Zero-result searches and filters.
+- Premium listing conversion and retention.
+
+The next product questions I would answer before expanding the feature are:
+
+- What does "vetted" mean operationally, and who approves or suspends listings?
+- Is the paid tier buying ranking, richer profile fields, lead priority, analytics, or all of those?
+- Is the primary conversion a profile view, enquiry, course booking, or trainer subscription?
+- Should the directory list trainers, training providers, individual courses, or cohorts?
+- What information is legally or commercially required before a student contacts a trainer?
+
+Suggested roadmap:
+
+- Phase 1: Public directory, Premium disclosure, search, filters, and shortlist.
+- Phase 2: Trainer profile pages with credentials, course dates, outcomes, and enquiry CTAs.
+- Phase 3: Admin approval workflow, subscription visibility rules, and trainer self-serve profile editing.
+- Phase 4: Analytics-driven ranking, zero-result reporting, and Premium value reporting for trainers.
+- Phase 5: AI-assisted canonical tagging and semantic search once moderation rules are in place.
 
 ## Progress Report
 
@@ -119,7 +154,7 @@ Built:
 - Lightweight automated tests for ranking, search, and filtering behaviour.
 - Accessibility polish including a skip link, labelled filter group, and keyboard-visible controls.
 - Trust-first UI polish: stronger hero, trust strip, icon-led metadata, and richer Premium card treatment.
-- UI/UX refinement: compact trainer cards, tab-style filter bar, shorter ranking copy, and mobile-friendly card density.
+- UI/UX refinement: search-led header, Premium spotlight rail, compact trainer cards, sticky shortlist bar, tab-style filter bar, shorter ranking copy, and mobile-friendly card density.
 - README screenshots generated with Playwright.
 - Basic Open Graph/Twitter metadata and a polished marketplace-style UI.
 

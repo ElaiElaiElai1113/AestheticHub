@@ -44,12 +44,12 @@ export function PractitionerCard({
       className={[
         "group relative flex h-full flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition duration-200",
         isPremium
-          ? "border-amber-300 ring-1 ring-amber-100 hover:-translate-y-1 hover:shadow-xl"
+          ? "border-amber-300 ring-1 ring-amber-100 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-950/10"
           : "border-slate-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md",
       ].join(" ")}
     >
       {isPremium ? (
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-100 bg-amber-50 px-5 py-3 text-xs font-semibold text-amber-900">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-100 bg-[#fff8e8] px-5 py-3 text-xs font-semibold text-amber-900">
           <span className="inline-flex items-center gap-2 uppercase tracking-wide">
             <Sparkles aria-hidden className="size-4" />
             Featured profile
@@ -61,7 +61,7 @@ export function PractitionerCard({
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="flex items-center gap-1.5 text-sm font-medium text-slate-500">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-teal-700">
               <MapPin aria-hidden className="size-4" />
               {practitioner.location}
             </p>
@@ -82,6 +82,11 @@ export function PractitionerCard({
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
+          <p className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 ring-1 ring-teal-100">
+            <UsersRound aria-hidden className="size-3.5" />
+            Best for {practitioner.audience.toLowerCase()}
+          </p>
+
           {isPremium ? (
             <p className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-100">
               <BadgeCheck aria-hidden className="size-3.5" />
@@ -101,8 +106,8 @@ export function PractitionerCard({
           {practitioner.summary}
         </p>
 
-        <div className="mt-4 rounded-lg bg-slate-950 px-4 py-3 text-white">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-300">
+        <div className="mt-4 rounded-lg bg-[#0f3438] px-4 py-3 text-white">
+          <p className="text-xs font-semibold uppercase tracking-wide text-teal-100">
             Best match
           </p>
           <p className="mt-1 text-sm font-semibold leading-5">
@@ -174,7 +179,7 @@ export function PractitionerCard({
             }
             aria-pressed={isShortlisted}
             className={[
-              "inline-flex min-w-28 items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition focus:outline-none focus:ring-4",
+              "inline-flex min-w-28 items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-sm transition focus:outline-none focus:ring-4",
               isShortlisted
                 ? "border-emerald-200 bg-emerald-50 text-emerald-700 focus:ring-emerald-100"
                 : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-950 focus:ring-slate-200",

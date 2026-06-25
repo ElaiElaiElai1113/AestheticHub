@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { MapPin, Search, Sparkles } from "lucide-react";
 import { useMemo, useSyncExternalStore } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { PractitionerCard } from "@/app/components/practitioner-card";
@@ -85,6 +85,13 @@ export function PractitionerDirectory({
     () => storedShortlistedIds.filter((id) => validPractitionerIds.has(id)),
     [storedShortlistedIds, validPractitionerIds],
   );
+  const featuredPractitioners = useMemo(
+    () =>
+      filteredPractitioners
+        .filter((practitioner) => practitioner.tier === "premium")
+        .slice(0, 3),
+    [filteredPractitioners],
+  );
   const shortlistLabel =
     shortlistedIds.length === 1
       ? "1 shortlisted"
@@ -128,38 +135,62 @@ export function PractitionerDirectory({
   }
 
   return (
-    <section aria-labelledby="directory-heading" className="mt-10">
+    <section aria-labelledby="directory-heading" className="mt-10 pb-20">
       <div>
-        <div className="flex flex-col gap-4 border-b border-slate-200 pb-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
-              Find the right course lead
-            </p>
-            <h2
-              className="mt-2 text-2xl font-semibold text-slate-950"
-              id="directory-heading"
-            >
-              Browse vetted UK aesthetics trainers
-            </h2>
-          </div>
+        <div className="border-b border-slate-200 pb-4">
+          <div className="grid gap-4 lg:grid-cols-[minmax(18rem,1fr)_minmax(24rem,40rem)] lg:items-start">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
+                Find the right course lead
+              </p>
+              <h2
+                className="mt-2 max-w-xl text-2xl font-semibold leading-tight text-slate-950"
+                id="directory-heading"
+              >
+                Browse vetted UK aesthetics trainers
+              </h2>
+              <div
+                className="mt-3 space-y-1 text-sm text-slate-600"
+                id="directory-results-summary"
+              >
+                <p>
+                  Showing{" "}
+                  <span className="font-semibold text-slate-950">
+                    {resultLabel}
+                  </span>
+                  {selectedSpecialism === allSpecialisms
+                    ? ""
+                    : ` for ${selectedSpecialism}`}
+                  {selectedTierLabel ? ` in ${selectedTierLabel}` : ""}
+                  {activeSearchQuery ? ` matching "${activeSearchQuery}"` : ""}
+                </p>
+                <p className="text-xs leading-5 text-slate-500">
+                  Premium appears first, then results sort by relevance and name.
+                  <span className="ml-2 font-semibold text-slate-700">
+                    {shortlistLabel}.
+                  </span>
+                </p>
+              </div>
+            </div>
 
-          <div className="flex flex-col gap-3 lg:min-w-[720px]">
             <label className="relative block">
               <span className="sr-only">Search trainers</span>
               <Search
                 aria-hidden
-                className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-teal-600"
               />
               <input
-                className="h-10 w-full rounded-full border border-slate-200 bg-white pl-9 pr-4 text-sm font-medium text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-200"
+                className="h-12 w-full rounded-full border border-slate-200 bg-white pl-12 pr-5 text-base font-semibold text-slate-950 shadow-md shadow-slate-950/5 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
                 onChange={(event) => updateUrlFilter("q", event.target.value)}
-                placeholder="Search name, city, specialism"
+                placeholder="Search treatment, city, trainer, or tier"
                 type="search"
                 value={searchQuery}
               />
             </label>
+          </div>
 
-            <div className="grid gap-3 lg:grid-cols-[auto_1fr] lg:items-start">
+          <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div className="grid min-w-0 flex-1 gap-3">
               <FilterGroup
                 headingId="tier-filter-heading"
                 label="Tier"
@@ -188,62 +219,43 @@ export function PractitionerDirectory({
                 ))}
               </FilterGroup>
             </div>
+            <button
+              className="w-fit shrink-0 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 lg:mt-5"
+              disabled={!hasActiveFilters}
+              onClick={resetFilters}
+              type="button"
+            >
+              Reset filters
+            </button>
           </div>
-        </div>
-
-        <div
-          className="flex flex-col gap-3 border-b border-slate-200 py-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between"
-          id="directory-results-summary"
-        >
-          <div className="space-y-1">
-            <p>
-              Showing{" "}
-              <span className="font-semibold text-slate-950">
-                {resultLabel}
-              </span>
-              {selectedSpecialism === allSpecialisms
-                ? ""
-                : ` for ${selectedSpecialism}`}
-              {selectedTierLabel ? ` in ${selectedTierLabel}` : ""}
-              {activeSearchQuery ? ` matching "${activeSearchQuery}"` : ""}
-            </p>
-            <p className="max-w-3xl text-xs leading-5 text-slate-500">
-              Premium appears first, then results sort by relevance and name.
-              <span className="ml-2 font-semibold text-slate-700">
-                {shortlistLabel}.
-              </span>
-            </p>
-          </div>
-          <button
-            className="w-fit rounded-full border border-slate-200 bg-white px-3.5 py-1.5 font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
-            disabled={!hasActiveFilters}
-            onClick={resetFilters}
-            type="button"
-          >
-            Reset filters
-          </button>
         </div>
       </div>
 
       {filteredPractitioners.length > 0 ? (
-        <div
-          aria-describedby="directory-results-summary"
-          className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3"
-        >
-          {filteredPractitioners.map((practitioner) => (
-            <PractitionerCard
-              isShortlisted={shortlistedIds.includes(practitioner.id)}
-              key={practitioner.id}
-              matchesSelectedSpecialism={
-                selectedSpecialismForRanking
-                  ? practitioner.specialisms.includes(selectedSpecialismForRanking)
-                  : false
-              }
-              onToggleShortlist={() => toggleShortlist(practitioner.id)}
-              practitioner={practitioner}
-            />
-          ))}
-        </div>
+        <>
+          {selectedTier !== "standard" && featuredPractitioners.length > 0 ? (
+            <FeaturedTrainerStrip practitioners={featuredPractitioners} />
+          ) : null}
+
+          <div
+            aria-describedby="directory-results-summary"
+            className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+          >
+            {filteredPractitioners.map((practitioner) => (
+              <PractitionerCard
+                isShortlisted={shortlistedIds.includes(practitioner.id)}
+                key={practitioner.id}
+                matchesSelectedSpecialism={
+                  selectedSpecialismForRanking
+                    ? practitioner.specialisms.includes(selectedSpecialismForRanking)
+                    : false
+                }
+                onToggleShortlist={() => toggleShortlist(practitioner.id)}
+                practitioner={practitioner}
+              />
+            ))}
+          </div>
+        </>
       ) : (
         <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
           <h3 className="text-lg font-semibold text-slate-950">
@@ -262,7 +274,95 @@ export function PractitionerDirectory({
           </button>
         </div>
       )}
+
+      {shortlistedIds.length > 0 ? (
+        <ShortlistBar
+          count={shortlistedIds.length}
+          onClear={() => saveStoredShortlist([])}
+        />
+      ) : null}
     </section>
+  );
+}
+
+function FeaturedTrainerStrip({
+  practitioners,
+}: {
+  practitioners: Practitioner[];
+}) {
+  return (
+    <section
+      aria-label="Featured Premium trainers"
+      className="mt-6 rounded-lg border border-amber-200 bg-[#fff8e8] p-4 shadow-sm"
+    >
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">
+            <Sparkles aria-hidden className="size-4" />
+            Premium spotlight
+          </p>
+          <h3 className="mt-1 text-lg font-semibold text-slate-950">
+            Featured course leads
+          </h3>
+        </div>
+        <p className="text-sm text-slate-600">
+          Paid placement is highlighted before the full results list.
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-3">
+        {practitioners.map((practitioner) => (
+          <article
+            className="rounded-lg border border-amber-200 bg-white p-4 shadow-sm"
+            key={practitioner.id}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h4 className="text-base font-semibold text-slate-950">
+                  {practitioner.name}
+                </h4>
+                <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-slate-500">
+                  <MapPin aria-hidden className="size-4" />
+                  {practitioner.location}
+                </p>
+              </div>
+              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-wide text-amber-800">
+                Premium
+              </span>
+            </div>
+            <p className="mt-3 text-sm font-semibold leading-5 text-slate-800">
+              {practitioner.bestMatch}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ShortlistBar({
+  count,
+  onClear,
+}: {
+  count: number;
+  onClear: () => void;
+}) {
+  return (
+    <div
+      aria-live="polite"
+      className="fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center justify-between gap-3 rounded-full border border-slate-800/10 bg-slate-950 px-4 py-3 text-white shadow-2xl shadow-slate-950/25"
+    >
+      <p className="text-sm font-semibold">
+        {count === 1 ? "1 trainer shortlisted" : `${count} trainers shortlisted`}
+      </p>
+      <button
+        className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-white/20"
+        onClick={onClear}
+        type="button"
+      >
+        Clear
+      </button>
+    </div>
   );
 }
 
@@ -276,14 +376,19 @@ function FilterGroup({
   label: string;
 }) {
   return (
-    <div aria-labelledby={headingId} role="group">
+    <div aria-labelledby={headingId} className="min-w-0" role="group">
       <h3
-        className="mb-1.5 text-[0.68rem] font-semibold uppercase tracking-wide text-slate-500"
+        className="mb-1.5 px-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-slate-500"
         id={headingId}
       >
         {label}
       </h3>
-      <div className="flex flex-wrap gap-1.5">{children}</div>
+      <div className="relative -mx-1 max-w-full overflow-hidden">
+        <div className="flex max-w-full snap-x gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:flex-wrap lg:overflow-visible lg:pb-0">
+          {children}
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#f4f0e8] to-transparent lg:hidden" />
+      </div>
     </div>
   );
 }
@@ -301,7 +406,7 @@ function FilterButton({
     <button
       aria-pressed={isSelected}
       className={[
-        "rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
+        "snap-start whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
         isSelected
           ? "border-slate-950 bg-slate-950 text-white shadow-sm"
           : "border-slate-200 bg-white/80 text-slate-700 hover:border-slate-300 hover:bg-white",
