@@ -86,13 +86,13 @@ The automated tests cover ranking, specialism filtering, tier filtering, combine
 
 Premium trainers are listed first and have stronger visual treatment because the paid tier needs a visible commercial benefit. I also added a ranking note in the UI because paid placement affects student trust and should not be hidden.
 
-The visual direction is trust-first rather than decorative. The hero sets clear marketplace positioning, the trust strip reinforces vetting and transparency, and the cards expose concrete decision signals before asking students to click further.
+The visual direction is trust-first rather than decorative. The hero sets clear marketplace positioning, the trust strip reinforces vetting and transparency, and the compact cards expose concrete decision signals without overwhelming the directory.
 
 Filtering is by specialism and listing tier. Specialism is the strongest student intent signal, while the tier filter makes the commercial distinction transparent and easy to inspect.
 
 The selected filters are synced to the URL, for example `/?specialism=Laser%20and%20IPL&tier=premium`, so filtered directory states can be shared and reviewed directly.
 
-The cards include extra decision-support fields such as best-fit audience, format, trust signals, and cohort timing. These are still seed-data fields, but they show the kind of information a real marketplace would need to help students compare trainers.
+The cards include decision-support fields such as best-fit audience, format, trust signals, and cohort timing. Longer tag lists are collapsed into "+ more" chips so students can scan results faster.
 
 The data stays in a typed in-memory dataset because persistence, onboarding, subscription checks, and approval workflows would be outside the intended half-day slice.
 
@@ -112,6 +112,7 @@ Built:
 - Lightweight automated tests for ranking and filtering behaviour.
 - Accessibility polish including a skip link, labelled filter group, and keyboard-visible controls.
 - Trust-first UI polish: stronger hero, trust strip, icon-led metadata, and richer Premium card treatment.
+- UI/UX refinement: compact trainer cards, clearer filter toolbar, shorter ranking copy, and mobile-friendly card density.
 - README screenshots generated with Playwright.
 - Basic Open Graph/Twitter metadata and a polished marketplace-style UI.
 

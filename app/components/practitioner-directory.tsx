@@ -88,7 +88,7 @@ export function PractitionerDirectory({
 
   return (
     <section aria-labelledby="directory-heading" className="mt-10">
-      <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm backdrop-blur">
+      <div className="rounded-lg border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur">
         <div className="flex flex-col gap-5">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
@@ -111,10 +111,10 @@ export function PractitionerDirectory({
             </p>
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-4 rounded-lg border border-slate-100 bg-slate-50/80 p-3 lg:grid-cols-[auto_1fr] lg:items-start">
             <FilterGroup
               headingId="tier-filter-heading"
-              label="Filter trainers by listing tier"
+              label="Tier"
             >
               {tierFilters.map((tier) => (
                 <FilterButton
@@ -128,7 +128,7 @@ export function PractitionerDirectory({
 
             <FilterGroup
               headingId="specialism-filter-heading"
-              label="Filter trainers by specialism"
+              label="Specialism"
             >
               {[allSpecialisms, ...specialisms].map((specialism) => (
                 <FilterButton
@@ -143,7 +143,7 @@ export function PractitionerDirectory({
         </div>
 
         <div
-          className="mt-5 grid gap-4 border-t border-slate-100 pt-4 text-sm text-slate-600 lg:grid-cols-[1fr_auto] lg:items-start"
+          className="mt-4 grid gap-4 border-t border-slate-100 pt-4 text-sm text-slate-600 lg:grid-cols-[1fr_auto] lg:items-start"
           id="directory-results-summary"
         >
           <div className="space-y-2">
@@ -158,10 +158,8 @@ export function PractitionerDirectory({
               {selectedTierLabel ? ` in ${selectedTierLabel}` : ""}
             </p>
             <p className="max-w-3xl leading-6">
-              Results show Premium trainers first as featured placements. Within
-              each tier, selected-specialism matches are prioritised, then
-              sorted by trainer name. Tier filters narrow the list without
-              changing those ranking rules.
+              Premium trainers are featured first. Within each tier, results
+              are sorted by selected-specialism relevance and trainer name.
             </p>
           </div>
           <button
@@ -178,7 +176,7 @@ export function PractitionerDirectory({
       {filteredPractitioners.length > 0 ? (
         <div
           aria-describedby="directory-results-summary"
-          className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3"
+          className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3"
         >
           {filteredPractitioners.map((practitioner) => (
             <PractitionerCard
@@ -193,7 +191,7 @@ export function PractitionerDirectory({
           ))}
         </div>
       ) : (
-        <div className="mt-8 rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
+        <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
           <h3 className="text-lg font-semibold text-slate-950">
             No trainers found
           </h3>
@@ -225,7 +223,10 @@ function FilterGroup({
 }) {
   return (
     <div aria-labelledby={headingId} role="group">
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500" id={headingId}>
+      <h3
+        className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
+        id={headingId}
+      >
         {label}
       </h3>
       <div className="flex flex-wrap gap-2">{children}</div>
@@ -246,7 +247,7 @@ function FilterButton({
     <button
       aria-pressed={isSelected}
       className={[
-        "rounded-full border px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
+        "rounded-full border px-3.5 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
         isSelected
           ? "border-slate-950 bg-slate-950 text-white shadow-sm"
           : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",

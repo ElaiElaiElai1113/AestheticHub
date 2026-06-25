@@ -25,7 +25,10 @@ export function PractitionerCard({
   practitioner,
 }: PractitionerCardProps) {
   const isPremium = practitioner.tier === "premium";
-  const visibleTrustSignals = practitioner.trustSignals.slice(0, 2);
+  const visibleSpecialisms = practitioner.specialisms.slice(0, 2);
+  const hiddenSpecialismCount =
+    practitioner.specialisms.length - visibleSpecialisms.length;
+  const visibleTrustSignals = practitioner.trustSignals.slice(0, 1);
   const hiddenTrustSignalCount =
     practitioner.trustSignals.length - visibleTrustSignals.length;
 
@@ -39,9 +42,12 @@ export function PractitionerCard({
       ].join(" ")}
     >
       {isPremium ? (
-        <div className="flex items-center gap-2 border-b border-amber-100 bg-amber-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-amber-900">
-          <Sparkles aria-hidden className="size-4" />
-          Featured profile
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-100 bg-amber-50 px-5 py-3 text-xs font-semibold text-amber-900">
+          <span className="inline-flex items-center gap-2 uppercase tracking-wide">
+            <Sparkles aria-hidden className="size-4" />
+            Featured profile
+          </span>
+          <span className="text-amber-800">Priority placement</span>
         </div>
       ) : null}
 
@@ -72,7 +78,7 @@ export function PractitionerCard({
           {isPremium ? (
             <p className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-100">
               <BadgeCheck aria-hidden className="size-3.5" />
-              Priority listing
+              Richer profile and priority placement
             </p>
           ) : null}
 
@@ -84,7 +90,7 @@ export function PractitionerCard({
           ) : null}
         </div>
 
-        <p className="mt-5 text-sm leading-6 text-slate-600">
+        <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600">
           {practitioner.summary}
         </p>
 
@@ -97,7 +103,7 @@ export function PractitionerCard({
           </p>
         </div>
 
-        <dl className="mt-5 grid gap-4 border-y border-slate-100 py-4 text-sm sm:grid-cols-3">
+        <dl className="mt-4 grid grid-cols-3 gap-3 border-y border-slate-100 py-4 text-sm">
           <InfoItem
             icon={UsersRound}
             label="Best for"
@@ -111,8 +117,8 @@ export function PractitionerCard({
           />
         </dl>
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          {practitioner.specialisms.map((specialism) => (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {visibleSpecialisms.map((specialism) => (
             <span
               className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700"
               key={specialism}
@@ -120,9 +126,14 @@ export function PractitionerCard({
               {specialism}
             </span>
           ))}
+          {hiddenSpecialismCount > 0 ? (
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
+              +{hiddenSpecialismCount} more
+            </span>
+          ) : null}
         </div>
 
-        <div className="mt-4">
+        <div className="mt-3">
           <p className="flex items-center gap-1.5 text-[0.7rem] font-semibold uppercase tracking-wide text-slate-500">
             <ShieldCheck aria-hidden className="size-3.5" />
             Trust signals
@@ -168,11 +179,13 @@ function InfoItem({
 }) {
   return (
     <div>
-      <dt className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <dt className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-wide text-slate-500">
         <Icon aria-hidden className="size-3.5" />
         {label}
       </dt>
-      <dd className="mt-1 font-semibold leading-5 text-slate-950">{value}</dd>
+      <dd className="mt-1 text-xs font-semibold leading-5 text-slate-950 sm:text-sm">
+        {value}
+      </dd>
     </div>
   );
 }
