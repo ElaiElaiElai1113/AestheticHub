@@ -59,6 +59,10 @@ export function PractitionerDirectory({
               Filter by specialism to compare trainers who match the treatment
               area or business skill you want to develop next.
             </p>
+            <p className="mt-3 max-w-2xl text-sm font-medium text-slate-700">
+              All listed trainers are reviewed before appearing in the
+              directory.
+            </p>
           </div>
 
           <div aria-label="Filter by specialism" className="flex flex-wrap gap-2">
