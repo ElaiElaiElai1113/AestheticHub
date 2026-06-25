@@ -13,21 +13,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aesthetic Training Hub | Practitioner Directory",
+  title: "Aesthetic Training Hub | Find Aesthetics Trainers",
   description:
-    "Find vetted UK aesthetics trainers by specialism, location, and subscription tier.",
+    "Find vetted UK aesthetics trainers by treatment area, location, course fit, and tier.",
   openGraph: {
-    title: "Aesthetic Training Hub Practitioner Directory",
+    title: "Aesthetic Training Hub | Find Aesthetics Trainers",
     description:
-      "Compare vetted UK aesthetics trainers by specialism, location, and listing tier.",
+      "Compare vetted UK aesthetics trainers by treatment area, location, course fit, and tier.",
     siteName: "Aesthetic Training Hub",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aesthetic Training Hub Practitioner Directory",
+    title: "Aesthetic Training Hub | Find Aesthetics Trainers",
     description:
-      "Compare vetted UK aesthetics trainers by specialism, location, and listing tier.",
+      "Compare vetted UK aesthetics trainers by treatment area, location, course fit, and tier.",
   },
 };
 

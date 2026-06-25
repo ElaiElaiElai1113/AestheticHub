@@ -7,6 +7,7 @@ export type Practitioner = {
   location: string;
   tier: PractitionerTier;
   summary: string;
+  featuredImage?: string;
   yearsTraining: number;
   audience: string;
   bestMatch: string;
@@ -28,6 +29,7 @@ export const practitioners: Practitioner[] = [
     tier: "premium",
     summary:
       "Doctor-led training with small clinical cohorts and complication-safe protocols.",
+    featuredImage: "/featured-trainers/amara-clinic-academy.png",
     yearsTraining: 8,
     audience: "Advanced injectors",
     bestMatch: "Advanced injectors who want complication-safe protocols.",
@@ -43,6 +45,7 @@ export const practitioners: Practitioner[] = [
     tier: "premium",
     summary:
       "Commercially focused injectable training for practitioners building private clinics.",
+    featuredImage: "/featured-trainers/the-dermal-lab.png",
     yearsTraining: 6,
     audience: "Clinic owners",
     bestMatch: "Clinic owners growing a profitable injectable offer.",
@@ -73,6 +76,7 @@ export const practitioners: Practitioner[] = [
     tier: "premium",
     summary:
       "Central London academy specialising in anatomy-led injectable foundations.",
+    featuredImage: "/featured-trainers/harley-aesthetic-institute.png",
     yearsTraining: 10,
     audience: "Beginners",
     bestMatch: "Beginners who want anatomy-led injectable foundations.",

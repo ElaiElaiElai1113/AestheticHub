@@ -1,15 +1,19 @@
 "use client";
 
 import { MapPin, Search, Sparkles } from "lucide-react";
-import { useMemo, useSyncExternalStore } from "react";
+import Image from "next/image";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { PractitionerCard } from "@/app/components/practitioner-card";
 import {
   allSpecialisms,
   allTiers,
   filterAndRankPractitioners,
+  getSelectableSort,
   getSelectableSpecialism,
   getSelectableTier,
+  recommendedSort,
+  type SortOption,
   type TierFilter,
 } from "@/app/data/practitioner-search";
 import {
@@ -27,6 +31,25 @@ const tierFilters: { label: string; value: TierFilter }[] = [
   { label: "Standard", value: "standard" },
 ];
 
+const sortOptions: { label: string; value: SortOption; description: string }[] = [
+  {
+    label: "Recommended",
+    value: recommendedSort,
+    description: "Highlighted trainers first, then relevance and name",
+  },
+  {
+    label: "Most experienced",
+    value: "experience",
+    description: "Highest years training first",
+  },
+  {
+    label: "A-Z",
+    value: "name",
+    description: "Trainer name alphabetical",
+  },
+];
+
+const initialVisibleTrainerCount = 6;
 const shortlistStorageKey = "aesthetic-training-hub-shortlist";
 const shortlistChangeEvent = "aesthetic-training-hub-shortlist-change";
 const emptyShortlistSnapshot: string[] = [];
@@ -45,8 +68,19 @@ export function PractitionerDirectory({
     specialisms,
   );
   const selectedTier = getSelectableTier(searchParams.get("tier"));
+  const selectedSort = getSelectableSort(searchParams.get("sort"));
   const searchQuery = searchParams.get("q") ?? "";
   const activeSearchQuery = searchQuery.trim();
+  const resultSetKey = [
+    selectedSpecialism,
+    selectedTier,
+    selectedSort,
+    activeSearchQuery,
+  ].join("|");
+  const [visibleTrainerState, setVisibleTrainerState] = useState({
+    count: initialVisibleTrainerCount,
+    resultSetKey: "",
+  });
 
   const selectedSpecialismForRanking =
     selectedSpecialism === allSpecialisms ? null : selectedSpecialism;
@@ -57,8 +91,9 @@ export function PractitionerDirectory({
       selectedSpecialism,
       selectedTier,
       searchQuery,
+      selectedSort,
     );
-  }, [practitioners, searchQuery, selectedSpecialism, selectedTier]);
+  }, [practitioners, searchQuery, selectedSort, selectedSpecialism, selectedTier]);
 
   const resultLabel =
     filteredPractitioners.length === 1
@@ -67,6 +102,7 @@ export function PractitionerDirectory({
   const hasActiveFilters =
     selectedSpecialism !== allSpecialisms ||
     selectedTier !== allTiers ||
+    selectedSort !== recommendedSort ||
     activeSearchQuery !== "";
   const selectedTierLabel =
     selectedTier === allTiers
@@ -96,14 +132,30 @@ export function PractitionerDirectory({
     shortlistedIds.length === 1
       ? "1 shortlisted"
       : `${shortlistedIds.length} shortlisted`;
+  const selectedSortLabel =
+    sortOptions.find((sortOption) => sortOption.value === selectedSort)?.label ??
+    "Recommended";
+  const visibleTrainerCount =
+    visibleTrainerState.resultSetKey === resultSetKey
+      ? visibleTrainerState.count
+      : initialVisibleTrainerCount;
+  const visiblePractitioners = filteredPractitioners.slice(
+    0,
+    visibleTrainerCount,
+  );
+  const canShowMore = visibleTrainerCount < filteredPractitioners.length;
 
-  function updateUrlFilter(key: "specialism" | "tier" | "q", value: string) {
+  function updateUrlFilter(
+    key: "specialism" | "tier" | "q" | "sort",
+    value: string,
+  ) {
     const params = new URLSearchParams(searchParams.toString());
 
     if (
       (key === "specialism" && value === allSpecialisms) ||
       (key === "tier" && value === allTiers) ||
-      (key === "q" && value.trim() === "")
+      (key === "q" && value.trim() === "") ||
+      (key === "sort" && value === recommendedSort)
     ) {
       params.delete(key);
     } else {
@@ -119,6 +171,7 @@ export function PractitionerDirectory({
     params.delete("specialism");
     params.delete("tier");
     params.delete("q");
+    params.delete("sort");
 
     const queryString = params.toString();
     window.history.pushState(null, "", queryString ? `${pathname}?${queryString}` : pathname);
@@ -140,8 +193,8 @@ export function PractitionerDirectory({
         <div className="border-b border-slate-200 pb-4">
           <div className="grid gap-4 lg:grid-cols-[minmax(18rem,1fr)_minmax(24rem,40rem)] lg:items-start">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
-                Find the right course lead
+              <p className="text-sm font-semibold uppercase text-teal-700">
+                Find a course lead
               </p>
               <h2
                 className="mt-2 max-w-xl text-2xl font-semibold leading-tight text-slate-950"
@@ -165,7 +218,9 @@ export function PractitionerDirectory({
                   {activeSearchQuery ? ` matching "${activeSearchQuery}"` : ""}
                 </p>
                 <p className="text-xs leading-5 text-slate-500">
-                  Premium appears first, then results sort by relevance and name.
+                  {selectedSort === recommendedSort
+                    ? "Highlighted Premium trainers appear first, then results sort by relevance and name."
+                    : `Sorted by ${selectedSortLabel.toLowerCase()}. Premium trainers remain clearly marked.`}
                   <span className="ml-2 font-semibold text-slate-700">
                     {shortlistLabel}.
                   </span>
@@ -177,10 +232,10 @@ export function PractitionerDirectory({
               <span className="sr-only">Search trainers</span>
               <Search
                 aria-hidden
-                className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-teal-600"
+                className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-slate-400"
               />
               <input
-                className="h-12 w-full rounded-full border border-slate-200 bg-white pl-12 pr-5 text-base font-semibold text-slate-950 shadow-md shadow-slate-950/5 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
+                className="h-12 w-full rounded-lg border border-slate-300 bg-white pl-10 pr-4 text-base font-medium text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 focus:ring-0"
                 onChange={(event) => updateUrlFilter("q", event.target.value)}
                 placeholder="Search treatment, city, trainer, or tier"
                 type="search"
@@ -220,7 +275,7 @@ export function PractitionerDirectory({
               </FilterGroup>
             </div>
             <button
-              className="w-fit shrink-0 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 lg:mt-5"
+              className="w-fit shrink-0 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-500 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 lg:mt-5"
               disabled={!hasActiveFilters}
               onClick={resetFilters}
               type="button"
@@ -237,11 +292,40 @@ export function PractitionerDirectory({
             <FeaturedTrainerStrip practitioners={featuredPractitioners} />
           ) : null}
 
+          <div className="mt-6 flex flex-col gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-medium text-slate-600">
+              Showing{" "}
+              <span className="font-semibold text-slate-950">
+                {visiblePractitioners.length}
+              </span>{" "}
+              of{" "}
+              <span className="font-semibold text-slate-950">
+                {filteredPractitioners.length}
+              </span>{" "}
+              matching trainers
+            </p>
+
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <span>Sort by</span>
+              <select
+                className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-950 outline-none transition focus:border-slate-950 focus:ring-0"
+                onChange={(event) => updateUrlFilter("sort", event.target.value)}
+                value={selectedSort}
+              >
+                {sortOptions.map((sortOption) => (
+                  <option key={sortOption.value} value={sortOption.value}>
+                    {sortOption.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
           <div
             aria-describedby="directory-results-summary"
             className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
-            {filteredPractitioners.map((practitioner) => (
+            {visiblePractitioners.map((practitioner) => (
               <PractitionerCard
                 isShortlisted={shortlistedIds.includes(practitioner.id)}
                 key={practitioner.id}
@@ -255,6 +339,33 @@ export function PractitionerDirectory({
               />
             ))}
           </div>
+
+          {canShowMore ? (
+            <div className="mt-6 flex justify-center">
+              <button
+                className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-500 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200"
+                onClick={() =>
+                  setVisibleTrainerState((currentState) => {
+                    const currentCount =
+                      currentState.resultSetKey === resultSetKey
+                        ? currentState.count
+                        : initialVisibleTrainerCount;
+
+                    return {
+                      count: Math.min(
+                        currentCount + initialVisibleTrainerCount,
+                        filteredPractitioners.length,
+                      ),
+                      resultSetKey,
+                    };
+                  })
+                }
+                type="button"
+              >
+                Show more trainers
+              </button>
+            </div>
+          ) : null}
         </>
       ) : (
         <div className="mt-6 rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
@@ -263,7 +374,7 @@ export function PractitionerDirectory({
           </h3>
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-600">
             Try clearing the filter to see every vetted trainer currently
-            listed in the directory.
+            available in the directory.
           </p>
           <button
             className="mt-5 rounded-full bg-slate-950 px-5 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
@@ -292,52 +403,77 @@ function FeaturedTrainerStrip({
 }) {
   return (
     <section
-      aria-label="Featured Premium trainers"
-      className="mt-6 rounded-lg border border-amber-200 bg-[#fff8e8] p-4 shadow-sm"
+      aria-label="Premium trainer spotlight"
+      className="mt-8 rounded-lg border border-amber-200 bg-white p-4 shadow-sm"
     >
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase text-amber-800">
             <Sparkles aria-hidden className="size-4" />
             Premium spotlight
           </p>
           <h3 className="mt-1 text-lg font-semibold text-slate-950">
-            Featured course leads
+            Highlighted trainers
           </h3>
         </div>
         <p className="text-sm text-slate-600">
-          Paid placement is highlighted before the full results list.
+          Premium trainers receive enhanced visibility and are clearly marked.
         </p>
       </div>
 
       <div className="mt-4 grid gap-3 lg:grid-cols-3">
         {practitioners.map((practitioner) => (
           <article
-            className="rounded-lg border border-amber-200 bg-white p-4 shadow-sm"
+            className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50"
             key={practitioner.id}
           >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h4 className="text-base font-semibold text-slate-950">
-                  {practitioner.name}
-                </h4>
-                <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-slate-500">
-                  <MapPin aria-hidden className="size-4" />
-                  {practitioner.location}
-                </p>
-              </div>
-              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-wide text-amber-800">
+            <div className="relative aspect-[16/9] overflow-hidden bg-slate-200">
+              {practitioner.featuredImage ? (
+                <Image
+                  alt=""
+                  className="object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 33vw"
+                  src={practitioner.featuredImage}
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center bg-slate-900 text-3xl font-semibold text-white">
+                  {getInitials(practitioner.name)}
+                </div>
+              )}
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950/65 to-transparent" />
+              <span className="absolute left-3 top-3 rounded-lg bg-white/95 px-2.5 py-1 text-[0.68rem] font-semibold uppercase text-amber-800 shadow-sm">
                 Premium
               </span>
             </div>
-            <p className="mt-3 text-sm font-semibold leading-5 text-slate-800">
-              {practitioner.bestMatch}
-            </p>
+
+            <div className="p-4">
+              <h4 className="text-base font-semibold text-slate-950">
+                {practitioner.name}
+              </h4>
+              <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-slate-500">
+                <MapPin aria-hidden className="size-4" />
+                {practitioner.location}
+              </p>
+              <p className="mt-3 text-sm font-semibold leading-5 text-slate-800">
+                {practitioner.bestMatch}
+              </p>
+            </div>
           </article>
         ))}
       </div>
     </section>
   );
+}
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 }
 
 function ShortlistBar({
@@ -350,13 +486,13 @@ function ShortlistBar({
   return (
     <div
       aria-live="polite"
-      className="fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center justify-between gap-3 rounded-full border border-slate-800/10 bg-slate-950 px-4 py-3 text-white shadow-2xl shadow-slate-950/25"
+      className="fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-xl items-center justify-between gap-3 rounded-lg border border-slate-800/10 bg-slate-950 px-4 py-3 text-white shadow-2xl shadow-slate-950/25"
     >
       <p className="text-sm font-semibold">
         {count === 1 ? "1 trainer shortlisted" : `${count} trainers shortlisted`}
       </p>
       <button
-        className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-white/20"
+        className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-white/20"
         onClick={onClear}
         type="button"
       >
@@ -378,7 +514,7 @@ function FilterGroup({
   return (
     <div aria-labelledby={headingId} className="min-w-0" role="group">
       <h3
-        className="mb-1.5 px-0.5 text-[0.68rem] font-semibold uppercase tracking-wide text-slate-500"
+        className="mb-1.5 px-0.5 text-[0.68rem] font-semibold uppercase text-slate-500"
         id={headingId}
       >
         {label}
@@ -387,7 +523,7 @@ function FilterGroup({
         <div className="flex max-w-full snap-x gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:flex-wrap lg:overflow-visible lg:pb-0">
           {children}
         </div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#f4f0e8] to-transparent lg:hidden" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#f7f9fb] to-transparent lg:hidden" />
       </div>
     </div>
   );
@@ -406,7 +542,7 @@ function FilterButton({
     <button
       aria-pressed={isSelected}
       className={[
-        "snap-start whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
+        "snap-start whitespace-nowrap rounded-lg border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
         isSelected
           ? "border-slate-950 bg-slate-950 text-white shadow-sm"
           : "border-slate-200 bg-white/80 text-slate-700 hover:border-slate-300 hover:bg-white",

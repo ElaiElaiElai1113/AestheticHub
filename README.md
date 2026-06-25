@@ -97,7 +97,7 @@ Premium trainers are listed first and have stronger visual treatment because the
 
 The visual direction is trust-first rather than decorative. The hero sets clear marketplace positioning, the trust strip reinforces vetting and transparency, and the compact cards expose concrete decision signals without overwhelming the directory.
 
-The UI uses a stronger editorial hero, a search-led directory header, and a Premium spotlight rail to make the page feel more like a curated marketplace than a plain listing table.
+The UI uses a clinical editorial direction inspired by the Stitch concept: a lighter canvas, restrained trust strip, search-led directory header, compact trainer cards, and a Premium spotlight rail. I kept initials-based trainer markers rather than fake profile photography so the seed data does not imply real people or credentials.
 
 Filtering is by specialism and listing tier. Specialism is the strongest student intent signal, while the tier filter makes the commercial distinction transparent and easy to inspect.
 
