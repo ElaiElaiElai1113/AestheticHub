@@ -2,14 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { PractitionerCard } from "@/app/components/practitioner-card";
-import type { Practitioner } from "@/app/data/practitioners";
+import {
+  rankPractitionersForSpecialism,
+  type Practitioner,
+} from "@/app/data/practitioners";
 
 type PractitionerDirectoryProps = {
   practitioners: Practitioner[];
   specialisms: string[];
 };
 
-const allSpecialisms = "All specialisms";
+const allSpecialisms = "All";
 
 export function PractitionerDirectory({
   practitioners,
@@ -17,13 +20,19 @@ export function PractitionerDirectory({
 }: PractitionerDirectoryProps) {
   const [selectedSpecialism, setSelectedSpecialism] = useState(allSpecialisms);
 
+  const selectedSpecialismForRanking =
+    selectedSpecialism === allSpecialisms ? null : selectedSpecialism;
+
   const filteredPractitioners = useMemo(() => {
     if (selectedSpecialism === allSpecialisms) {
-      return practitioners;
+      return rankPractitionersForSpecialism(practitioners, null);
     }
 
-    return practitioners.filter((practitioner) =>
-      practitioner.specialisms.includes(selectedSpecialism),
+    return rankPractitionersForSpecialism(
+      practitioners.filter((practitioner) =>
+        practitioner.specialisms.includes(selectedSpecialism),
+      ),
+      selectedSpecialism,
     );
   }, [practitioners, selectedSpecialism]);
 
@@ -35,7 +44,7 @@ export function PractitionerDirectory({
   return (
     <section aria-labelledby="directory-heading" className="mt-10">
       <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm backdrop-blur">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-5">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
               Find the right course lead
@@ -52,31 +61,47 @@ export function PractitionerDirectory({
             </p>
           </div>
 
-          <label className="flex min-w-full flex-col gap-2 md:min-w-72">
-            <span className="text-sm font-medium text-slate-700">
-              Specialism
-            </span>
-            <select
-              className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm font-medium text-slate-950 shadow-sm outline-none transition focus:border-slate-950 focus:ring-4 focus:ring-slate-200"
-              onChange={(event) => setSelectedSpecialism(event.target.value)}
-              value={selectedSpecialism}
-            >
-              <option>{allSpecialisms}</option>
-              {specialisms.map((specialism) => (
-                <option key={specialism}>{specialism}</option>
-              ))}
-            </select>
-          </label>
+          <div aria-label="Filter by specialism" className="flex flex-wrap gap-2">
+            {[allSpecialisms, ...specialisms].map((specialism) => {
+              const isSelected = selectedSpecialism === specialism;
+
+              return (
+                <button
+                  aria-pressed={isSelected}
+                  className={[
+                    "rounded-full border px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-slate-200",
+                    isSelected
+                      ? "border-slate-950 bg-slate-950 text-white shadow-sm"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                  ].join(" ")}
+                  key={specialism}
+                  onClick={() => setSelectedSpecialism(specialism)}
+                  type="button"
+                >
+                  {specialism}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="mt-5 flex flex-col gap-3 border-t border-slate-100 pt-4 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            Showing{" "}
-            <span className="font-semibold text-slate-950">{resultLabel}</span>
-            {selectedSpecialism === allSpecialisms
-              ? ""
-              : ` for ${selectedSpecialism}`}
-          </p>
+        <div className="mt-5 grid gap-4 border-t border-slate-100 pt-4 text-sm text-slate-600 lg:grid-cols-[1fr_auto] lg:items-start">
+          <div className="space-y-2">
+            <p>
+              Showing{" "}
+              <span className="font-semibold text-slate-950">
+                {resultLabel}
+              </span>
+              {selectedSpecialism === allSpecialisms
+                ? ""
+                : ` for ${selectedSpecialism}`}
+            </p>
+            <p className="max-w-3xl leading-6">
+              Results show Premium trainers first as featured placements. Within
+              each tier, selected-specialism matches are prioritised, then
+              sorted by trainer name.
+            </p>
+          </div>
           <button
             className="w-fit rounded-full border border-slate-200 px-4 py-2 font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
             disabled={selectedSpecialism === allSpecialisms}
@@ -93,6 +118,11 @@ export function PractitionerDirectory({
           {filteredPractitioners.map((practitioner) => (
             <PractitionerCard
               key={practitioner.id}
+              matchesSelectedSpecialism={
+                selectedSpecialismForRanking
+                  ? practitioner.specialisms.includes(selectedSpecialismForRanking)
+                  : false
+              }
               practitioner={practitioner}
             />
           ))}
